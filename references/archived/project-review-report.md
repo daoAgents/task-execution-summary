@@ -36,7 +36,7 @@ task-execution-summary/
     ├── templates.md                  # 模板完整参考 (P1)
     ├── examples-v2.md                # 示例集 (P1)
     ├── terminology.md                # 术语表 (P3)
-    ├── project-review-report.md      # 项目复盘报告 (本文件)
+    ├── archived/project-review-report.md  # 项目复盘报告 (已归档)
     └── v3-planning/                  # V3规划文档 (P3)
         ├── v3-poc-verification.md    # POC验证文档
         ├── v3-roadmap.md             # V3路线图
