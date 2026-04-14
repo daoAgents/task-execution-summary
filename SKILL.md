@@ -247,40 +247,11 @@ compatibility:
 
 | 级别 | 行为 | 处理策略 | 示例错误码 |
 |------|------|---------|-----------|
-| 🔴 **Critical** | 立即终止，不生成报告 | 返回错误信息+紧急修复建议 | E041(内存不足)、E042(系统异常) |
+| 🔴 **Critical** | 立即终止，不生成报告 | 返回错误信息+紧急修复建议 | E041(内存不足) |
 | 🟠 **Error** | 终止并返回错误+修复建议 | 不生成报告，等待用户修正后重试 | E001(缺必要参数)、E031(模板不存在) |
 | 🟡 **Warning** | 降级继续，报告中标注 | 继续生成但标注低置信度区域 | E010(数据不足)、E022(时间估算偏差) |
 
-## 主要错误类别
-
-### 输入验证错误 (E001-E009)
-- **E001**: 缺少必要参数（task_name）
-- **E002**: task_name 格式无效
-- **E003**: 详细程度参数无效（非 summary/standard/detailed）
-- **E004**: 不支持的语言
-- **E005**: 其他格式错误
-
-### 信息收集错误 (E010-E019)
-- **E010**: 对话历史数据不足（⚠️ 降级处理）
-- **E011**: 无法访问对话历史
-- **E012**: 时间戳解析失败
-
-### 分析处理错误 (E020-E029)
-- **E020**: 分析引擎内部错误
-- **E021**: 数据质量不达标
-- **E022**: 时间估算存在较大偏差（⚠️ 降级处理）
-
-### 报告生成错误 (E030-E039)
-- **E030**: 模板加载失败
-- **E031**: 指定的模板不存在
-- **E032**: 报告渲染失败
-
-### 系统错误 (E040-E049)
-- **E041**: 内存不足
-- **E042**: 文件系统写入失败
-- **E043**: 未预期的系统异常
-
-完整错误码定义、详细说明和处理建议见 [error-codes.md](references/error-codes.md)
+> 完整的14个错误码定义及降级规则详见 [error-codes.md](references/error-codes.md)，速查版见 [error-codes-quick.md](references/error-codes-quick.md)
 
 ---
 
@@ -307,7 +278,7 @@ compatibility:
 | [execution-flow.md](references/execution-flow.md) | 完整执行流程 | P1 - 需要详细信息时加载 |
 | [templates.md](references/templates.md) | 完整模板详解 | P1 - 需要详细信息时加载 |
 | [examples-v2.md](references/examples-v2.md) | 完整使用示例 | P1 - 集成参考时加载 |
-| [terminology.md](references/terminology.md) | 术语表 | P2 - 遇到术语时查阅 |
+| [terminology.md](references/terminology.md) | 术语表 | P3 - 按需查阅，无需预加载 |
 
 ### V3 规划归档
 
@@ -335,6 +306,28 @@ compatibility:
 | v3-planning/v3-roadmap.md | v1.0 | v3.0 | **规划中** | V3 路线图（规划阶段文档） |
 | v3-planning/v3-poc-verification.md | v1.0 | v3.0 | **规划中** | V3 POC 验证方案（规划阶段文档） |
 | v3-planning/v3-user-research-spec.md | v1.0 | v3.0 | **规划中** | V3 用户研究规格（规划阶段文档） |
+
+### Token 预算与上下文感知加载
+
+#### Token 预算参考
+
+| 使用场景 | 推荐加载文档 | 预估Token消耗 | 适用情况 |
+|---------|-------------|-------------|---------|
+| 日常使用 | SKILL.md + 4个quick文件 | ~11,000 tokens | 常规任务总结生成 |
+| 深度集成 | P0 + P1 层文档 | ~61,500 tokens | API集成开发、问题排查 |
+| 全量参考 | 所有P0+P1+P2文档 | ~70,000 tokens | 首次学习、全面了解 |
+| V3规划 | 仅v3-planning/目录 | ~34,600 tokens | 仅规划讨论时加载 |
+
+#### 按意图加载推荐
+
+- **新手入门**：仅加载 SKILL.md → 如需深入，追加 examples-v2.md
+- **生成任务总结**：SKILL.md + templates-quick.md + execution-flow-quick.md
+- **API集成开发**：SKILL.md + api-reference-quick.md → 如需详情，追加 api-reference.md
+- **错误排查**：error-codes-quick.md → 如未解决，追加 error-codes.md
+- **模板定制**：templates-quick.md → 如需深度定制，追加 templates.md
+- **V3规划讨论**：仅加载 references/v3-planning/ 目录下文档，日常使用无需加载
+
+---
 
 ## 文档使用建议
 

@@ -62,6 +62,8 @@
 }
 ```
 
+> 参数完整定义详见 [api-reference.md](api-reference.md) 或速查版 [api-reference-quick.md](api-reference-quick.md)
+
 **请求参数解析**:
 
 | 参数 | 值 | 说明 |
