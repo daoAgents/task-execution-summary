@@ -38,7 +38,7 @@
   - [4.4 Notion 集成规格](#44-notion-集成规格)
   - [4.5 通用抽象层设计](#45-通用抽象层设计)
   - [4.6 安全要求](#46-安全要求)
-  - [4.7 API 扩展 Schema (publish\_targets)](#47-api-扩展-schema-publish_targets)
+  - [4.7 API 扩展 Schema (publish_targets)](#47-api-扩展-schema-publish_targets)
 - [5. 模块 B4: 历史报告管理系统](#5-模块-b4-历史报告管理系统)
   - [5.1 功能概述与价值主张](#51-功能概述与价值主张)
   - [5.2 Report Entity 数据模型](#52-report-entity-数据模型)

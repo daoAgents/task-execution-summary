@@ -312,7 +312,7 @@ class TemplateEnginePoC {
             'javascript:alert("xss")',
             '<img src=x onerror=alert("xss")>',
             '{{constructor.constructor("alert(1)")()}}',
-            '\\x3cscript\\x3ealert(1)\\x3c/script\\x3e'
+            '\x3cscript\x3ealert(1)\x3c/script\x3e'
         ];
         
         const maliciousData = {

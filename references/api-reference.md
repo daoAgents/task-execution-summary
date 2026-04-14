@@ -1295,7 +1295,7 @@ task-summary-sprint24-review-20260409-143022.json
 
 - 📘 本文档（API 接口参考文档）
 - 📘 SKILL.md（技能完整说明文档）
-- 📘 examples.md（典型使用场景示例）
+- 📘 examples-v2.md（典型使用场景示例）
 - 📘 templates.md（报告模板变体详细说明）
 - 📘 terminology.md（术语表和概念定义）
 - 📘 evals/evals.json（评估标准和测试用例）
@@ -1361,7 +1361,7 @@ task-summary-sprint24-review-20260409-143022.json
 | 文档名称 | 路径 | 说明 |
 |---------|------|------|
 | 技能完整说明 | `SKILL.md` | 技能的功能、原理和使用指南 |
-| 使用示例 | `references/examples.md` | 4个典型场景的详细示例 |
+| 使用示例 | `references/examples-v2.md` | 4个典型场景的详细示例 |
 | 模板规范 | `references/templates.md` | 4种模板变体的完整结构和填写指南 |
 | 术语表 | `references/terminology.md` | 专业术语的定义和解释 |
 | 评估标准 | `evals/evals.json` | 报告质量的评估维度和测试用例 |

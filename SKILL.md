@@ -287,17 +287,35 @@ compatibility:
 # 📚 参考文档索引
 
 本技能采用 **Progressive Disclosure** 架构，详细信息分散在 references/ 目录下的专门文档中：
+> 日常使用请优先查阅「快速参考」版本，仅在需要详细信息时加载完整参考文档。V3 规划文档仅供了解未来方向时参考。
 
-| 文档 | 用途 | 主要内容 | 何时阅读 |
-|------|------|---------|---------|
-| [api-reference.md](references/api-reference.md) | 完整 API 参数规范 | 所有输入参数、输出格式、调用示例 | 集成调用时、需要精确控制输出时 |
-| [error-codes.md](references/error-codes.md) | 所有错误码定义 | 完整错误码列表、原因分析、修复建议 | 排查问题时、调试报错时 |
-| [execution-flow.md](references/execution-flow.md) | 7步流程详解 | 每一步的详细说明、输入输出、边界情况 | 调试流程问题时、理解内部原理时 |
-| [examples.md](references/examples.md)（已废弃） | 4 场景使用示例 | 软件开发/Sprint/故障/学习的真实示例 | 请使用 examples-v2.md |
-| [examples-v2.md](references/examples-v2.md) | V2 完整请求/响应示例 | 标准化的请求响应格式、字段说明 | 开发集成时、测试对接时 |
-| [terminology.md](references/terminology.md) | 86 个专业术语 | 术语定义、使用场景、相关概念 | 遇到术语困惑时、撰写报告时 |
-| [templates.md](references/templates.md) | 4 种模板变体 | 模板结构、章节细节、填写指南 | 选择模板时、自定义输出时 |
-| [v3-roadmap.md](references/v3-roadmap.md) | V3 未来增强路线图 | 5大功能模块规划（自定义模板/多语言/外部集成/历史管理/团队协作）| 了解未来方向、参与功能规划时 |
+### 快速参考（日常优先加载）
+
+| 文档 | 说明 | 加载建议 |
+|------|------|---------|
+| [error-codes-quick.md](references/error-codes-quick.md) | 错误码速查表 | P0 - 日常优先 |
+| [execution-flow-quick.md](references/execution-flow-quick.md) | 执行流程速览 | P0 - 日常优先 |
+| [templates-quick.md](references/templates-quick.md) | 模板结构速查 | P0 - 日常优先 |
+| [api-reference-quick.md](references/api-reference-quick.md) | API 端点速查 | P0 - 日常优先 |
+
+### 完整参考（深度查阅）
+
+| 文档 | 说明 | 加载建议 |
+|------|------|---------|
+| [api-reference.md](references/api-reference.md) | 完整 API 详解 | P1 - 需要详细信息时加载 |
+| [error-codes.md](references/error-codes.md) | 完整错误码详解 | P1 - 需要详细信息时加载 |
+| [execution-flow.md](references/execution-flow.md) | 完整执行流程 | P1 - 需要详细信息时加载 |
+| [templates.md](references/templates.md) | 完整模板详解 | P1 - 需要详细信息时加载 |
+| [examples-v2.md](references/examples-v2.md) | 完整使用示例 | P1 - 集成参考时加载 |
+| [terminology.md](references/terminology.md) | 术语表 | P2 - 遇到术语时查阅 |
+
+### V3 规划归档
+
+| 文档 | 说明 | 加载建议 |
+|------|------|---------|
+| [v3-planning/v3-roadmap.md](references/v3-planning/v3-roadmap.md) | V3 路线图 | 仅规划阶段参考 |
+| [v3-planning/v3-poc-verification.md](references/v3-planning/v3-poc-verification.md) | PoC 验证方案 | 仅规划阶段参考 |
+| [v3-planning/v3-user-research-spec.md](references/v3-planning/v3-user-research-spec.md) | 用户研究规范 | 仅规划阶段参考 |
 
 ### 文档版本对照表
 
@@ -306,18 +324,21 @@ compatibility:
 | SKILL.md | v2.1 | v2.0+ | 生产 | 主文档，用户指南 |
 | api-reference.md | v1.0 | v1.0+ | 生产 | API 参数与响应规范 |
 | error-codes.md | v1.0 | v1.0+ | 生产 | 错误码定义与处理策略 |
-| examples.md | v1.0 | v1.0 | 已废弃 | 已被 examples-v2.md 取代 |
 | examples-v2.md | v2.0 | v2.0+ | 生产 | 标准化使用示例（推荐） |
 | execution-flow.md | v1.0 | v1.0+ | 生产 | 执行流程与性能基线 |
 | templates.md | v1.0 | v1.0+ | 生产 | 报告模板变体定义 |
 | terminology.md | v1.0 | v1.0+ | 生产 | 术语表（86个术语） |
-| v3-roadmap.md | v1.0 | v3.0（规划中） | 规划 | V3 路线图 |
-| v3-poc-verification.md | v1.0 | v3.0（规划中） | 规划 | V3 POC 验证方案 |
-| v3-user-research-spec.md | v1.0 | v3.0（规划中） | 规划 | V3 用户研究规格 |
+| error-codes-quick.md | v1.0 | v2.0+ | 生产 | 错误码速查表（精简版） |
+| execution-flow-quick.md | v1.0 | v2.0+ | 生产 | 执行流程速览（精简版） |
+| templates-quick.md | v1.0 | v2.0+ | 生产 | 模板结构速查（精简版） |
+| api-reference-quick.md | v1.0 | v2.0+ | 生产 | API 端点速查（精简版） |
+| v3-planning/v3-roadmap.md | v1.0 | v3.0 | **规划中** | V3 路线图（规划阶段文档） |
+| v3-planning/v3-poc-verification.md | v1.0 | v3.0 | **规划中** | V3 POC 验证方案（规划阶段文档） |
+| v3-planning/v3-user-research-spec.md | v1.0 | v3.0 | **规划中** | V3 用户研究规格（规划阶段文档） |
 
 ## 文档使用建议
 
-- **首次使用**：先读本文档（SKILL.md）+ [examples.md](references/examples.md)
+- **首次使用**：先读本文档（SKILL.md）+ [examples-v2.md](references/examples-v2.md)
 - **日常使用**：本文档足够，需要时查阅其他文档
 - **集成开发**：重点阅读 api-reference.md + examples-v2.md
 - **问题排查**：重点阅读 error-codes.md + execution-flow.md
@@ -385,13 +406,13 @@ A: 当对话信息覆盖率低于 90% 时，系统会发出 E010 警告并自动
 A: 会。对话轮数是影响生成耗时的主要因素。20 轮以内的对话通常 1-2 分钟完成；20-50 轮约 3-5 分钟；超过 50 轮可能需要 6-10 分钟。对于超长对话，系统会启用智能采样策略，优先保留包含决策、问题、目标等关键信息的消息，在控制耗时的同时尽量保证报告质量。详见 [execution-flow.md](references/execution-flow.md) 的性能优化策略章节。
 
 **Q8: 是否支持多语言输出？**
-A: 当前版本（v2.x）主要支持中文输出，对中英混合输入有良好的处理能力（技术术语自动保留英文原文）。完整的多语言输出支持（日语、韩语、西班牙语等）已列入 v3 路线图的 B2 模块规划中。详见 [v3-roadmap.md](references/v3-roadmap.md)。
+A: 当前版本（v2.x）主要支持中文输出，对中英混合输入有良好的处理能力（技术术语自动保留英文原文）。完整的多语言输出支持（日语、韩语、西班牙语等）已列入 v3 路线图的 B2 模块规划中。详见 [v3-planning/v3-roadmap.md](references/v3-planning/v3-roadmap.md)。
 
 **Q9: 如何自定义报告模板？**
-A: 当前版本提供四种模板变体：摘要版（summary）、标准版（standard）、详细版（detailed）和学习专用版（learning），可通过 `detail_level` 和 `template_variant` 参数选择。完全自定义模板功能（用户上传模板、自定义变量）已列入 v3 路线图的 B1 模块规划中。当前可通过 `include_sections` 参数控制包含的章节来实现部分定制。
+A: 当前版本提供四种模板变体：摘要版（summary）、标准版（standard）、详细版（detailed）和学习专用版（learning），可通过 `detail_level` 和 `template_variant` 参数选择。完全自定义模板功能（用户上传模板、自定义变量）已列入 v3 路线图的 B1 模块规划中。当前可通过 `include_sections` 参数控制包含的章节来实现部分定制。详见 [v3-planning/v3-roadmap.md](references/v3-planning/v3-roadmap.md)。
 
 **Q10: 生成的报告可以导出到外部工具吗？**
-A: 当前版本输出 Markdown 格式，可手动导入到 Confluence、Notion、飞书文档等平台。自动化的外部工具集成（一键发布到 Confluence/Notion/飞书）已列入 v3 路线图的 B3 模块规划中。
+A: 当前版本输出 Markdown 格式，可手动导入到 Confluence、Notion、飞书文档等平台。自动化的外部工具集成（一键发布到 Confluence/Notion/飞书）已列入 v3 路线图的 B3 模块规划中。详见 [v3-planning/v3-roadmap.md](references/v3-planning/v3-roadmap.md)。
 
 ---
 

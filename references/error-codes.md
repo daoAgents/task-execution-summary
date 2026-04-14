@@ -1595,76 +1595,15 @@ E0xx 参数验证 (5个)          E1xx 数据源 (3个)           E2xx 分析引
 
 ## 7. 客户端错误处理示例
 
-本节提供 JavaScript 和 Python 两种语言的错误处理代码示例，展示如何正确处理 API 响应中的 success/error 字段，以及如何区分 Warning 和 Error 级别的问题。
+### 7.1 关键处理要点
 
-### 7.1 JavaScript 示例
+| 场景 | 处理方式 | 说明 |
+|------|---------|------|
+| **Error/Critical** | 终止处理，返回错误 | 报告无法生成，需用户介入修正 |
+| **Warning (如 E010)** | 继续处理，标注影响 | 报告已生成但部分内容为推断 |
+| **完全成功** | 正常使用报告 | 质量评分为 A 或 B 级 |
 
-```javascript
-async function handleTaskSummaryResponse(response) {
-  // 检查是否成功
-  if (!response.success) {
-    const error = response.error;
-    
-    // 致命错误：无法生成报告
-    if (error.severity === 'critical' || error.severity === 'error') {
-      console.error(`[${error.code}] ${error.message}`);
-      
-      // 展示恢复建议
-      if (error.recovery) {
-        console.log('建议操作:', error.recovery.suggestion);
-        if (error.recovery.retry_possible) {
-          console.log('可在修正后重试');
-        }
-      }
-      return null;
-    }
-  }
-  
-  // 检查警告（报告已生成但存在质量问题）
-  const report = response.report;
-  if (report.quality_check?.warnings?.length > 0) {
-    for (const warning of report.quality_check.warnings) {
-      console.warn(`[${warning.code}] ${warning.message}`);
-      // E010: 数据覆盖不足，标注低置信度区域
-      if (warning.code === 'E010') {
-        markLowConfidenceSections(report, warning.affected_sections);
-      }
-    }
-  }
-  
-  return report;
-}
-```
-
-### 7.2 Python 示例
-
-```python
-def handle_task_summary_response(response: dict) -> dict | None:
-    """处理任务执行总结报告的响应"""
-    
-    # 检查是否成功
-    if not response.get("success"):
-        error = response.get("error", {})
-        severity = error.get("severity", "error")
-        
-        # 致命错误
-        if severity in ("critical", "error"):
-            print(f"[{error['code']}] {error['message']}")
-            recovery = error.get("recovery")
-            if recovery:
-                print(f"建议操作: {recovery['suggestion']}")
-            return None
-    
-    # 检查警告
-    report = response.get("report", {})
-    warnings = report.get("quality_check", {}).get("warnings", [])
-    for warning in warnings:
-        print(f"⚠️ [{warning['code']}] {warning['message']}")
-        if warning["code"] == "E010":
-            mark_low_confidence_sections(report, warning["affected_sections"])
-    
-    return report
-```
+### 7.2 JavaScript 和 Python 示例
 
 ### 7.3 关键处理要点
 
@@ -1699,29 +1638,7 @@ def handle_task_summary_response(response: dict) -> dict | None:
 - **E001-E005**（参数验证错误）：必须修正参数后重新请求
 - **E041**（系统资源耗尽）：必须释放资源或升级硬件
 
-### 8.3 重试伪代码
 
-```
-function executeWithRetry(request, maxRetries = 3):
-    for attempt in 1..maxRetries:
-        response = execute(request)
-        
-        if response.success:
-            return response
-        
-        error = response.error
-        if error.code not in RETRYABLE_ERRORS:
-            return response  // 不可重试，直接返回
-        
-        // 指数退避
-        delay = BASE_DELAY * (2 ^ (attempt - 1))
-        wait(delay)
-        
-        // 根据错误类型调整请求
-        request = adjustRequest(request, error)
-    
-    return lastResponse  // 重试耗尽
-```
 
 ### 8.4 请求调整策略
 
@@ -1798,45 +1715,7 @@ def adjust_request(request: dict, error: dict) -> dict:
   C. 终止生成 → 返回错误响应，说明缺失的信息类别
 ```
 
-### 9.4 降级实现示例
 
-```python
-def handle_data_insufficiency(coverage_score: float, missing_items: list) -> dict:
-    """根据数据覆盖率决定处理方式"""
-    
-    if coverage_score >= 90:
-        return {"action": "proceed", "warning": None}
-    
-    elif coverage_score >= 70:
-        return {
-            "action": "proceed_with_warning",
-            "warning": {
-                "code": "E010",
-                "message": "数据覆盖不足，报告将标注低置信度区域",
-                "quality_penalty": 10
-            }
-        }
-    
-    elif coverage_score >= 50:
-        return {
-            "action": "user_choice_required",
-            "error": {
-                "code": "E011",
-                "message": "数据严重不足，建议补充信息",
-                "options": ["degrade_continue", "supplement_info", "abort"]
-            }
-        }
-    
-    else:
-        return {
-            "action": "abort",
-            "error": {
-                "code": "E011",
-                "message": "数据极度不足，无法生成有价值的报告",
-                "missing_categories": missing_items
-            }
-        }
-```
 
 ### 9.5 质量评分调整公式
 

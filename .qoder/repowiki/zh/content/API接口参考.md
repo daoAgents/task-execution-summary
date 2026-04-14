@@ -7,6 +7,8 @@
 - [examples-v2.md](file://references/examples-v2.md)
 - [execution-flow.md](file://references/execution-flow.md)
 - [terminology.md](file://references/terminology.md)
+- [templates.md](file://references/templates.md)
+- [v3-user-research-spec.md](file://references/v3-planning/v3-user-research-spec.md)
 </cite>
 
 ## 目录
@@ -25,7 +27,7 @@
 
 ### 1.1 文档目的与适用范围
 
-本文档为“任务执行总结报告生成器”技能提供完整的 API 接口规范说明，旨在帮助开发者、集成商和高级用户：
+本文档为"任务执行总结报告生成器"技能提供完整的 API 接口规范说明，旨在帮助开发者、集成商和高级用户：
 
 - 理解接口的完整功能能力和参数体系
 - 准确构建符合规范的请求报文
@@ -178,23 +180,31 @@ C[examples-v2.md<br/>完整使用示例]
 D[execution-flow.md<br/>执行流程说明]
 E[terminology.md<br/>术语表]
 F[error-codes.md<br/>错误码定义]
-G[v3-user-research-spec.md<br/>用户研究规范]
+G[templates.md<br/>模板变体定义]
+H[v3-user-research-spec.md<br/>用户研究规范]
 end
 subgraph "evals 目录"
-H[评估指标与测试用例]
+I[评估指标与测试用例]
 end
 A --> B
 A --> C
 A --> D
 A --> E
+A --> G
 C --> B
 D --> B
+G --> A
+H --> A
 ```
 
 **图表来源**
 - [api-reference.md:1-1378](file://references/api-reference.md#L1-L1378)
 - [error-codes.md:1-1594](file://references/error-codes.md#L1-L1594)
 - [examples-v2.md:1-769](file://references/examples-v2.md#L1-L769)
+- [execution-flow.md:1-1985](file://references/execution-flow.md#L1-L1985)
+- [terminology.md:1-1104](file://references/terminology.md#L1-L1104)
+- [templates.md:1-2073](file://references/templates.md#L1-L2073)
+- [v3-user-research-spec.md:1-1204](file://references/v3-planning/v3-user-research-spec.md#L1-L1204)
 
 ### 2.2 文档层次结构
 
@@ -1320,6 +1330,7 @@ Error --> End
 - **examples.md (V1)**: 4 场景自然语言使用示例
 - **templates.md**: 4 种模板变体的结构定义
 - **terminology.md**: 86 个专业术语表
+- **v3-user-research-spec.md**: V3 用户需求定量调研方案
 
 ### 9.3 术语表
 
