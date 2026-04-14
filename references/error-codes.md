@@ -110,11 +110,13 @@ maintainer: "Task Execution Summary Generator Team"
 
 **严重级别说明**：
 
-| 级别 | 图标 | 定义 | 对执行的影响 |
+| 严重级别 | 图标 | 定义 | 对执行的影响 |
 |------|------|------|-------------|
 | **Critical** | 🔴 | 系统级故障 | 立即终止，不生成输出 |
 | **Error** | 🟠 | 功能性错误 | 终止当前步骤，可能返回部分结果 |
 | **Warning** | 🟡 | 非致命问题 | 标记警告，继续执行 |
+
+> 严重程度术语定义详见 [terminology.md#44-严重程度-severity](terminology.md#44-严重程度-severity)
 
 ---
 
@@ -545,7 +547,7 @@ error_handling_config:
 
 ---
 
-## 5. 降级策略详解
+## 5. [降级](terminology.md#229-降级-degradation)策略详解
 
 ### 5.1 降级执行流程
 
@@ -558,6 +560,8 @@ error_handling_config:
                                     使用推断/默认值
                                     计算 penalty
 ```
+
+> 术语定义详见 [terminology.md#229-降级-degradation](terminology.md#229-降级-degradation)
 
 ### 5.2 降级时的内容影响
 

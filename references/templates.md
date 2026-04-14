@@ -240,7 +240,7 @@ template_type: standard
 
 ---
 
-## 第一章：执行概览 (Executive Summary)
+## 第一章：[执行概览](terminology.md#61-执行概览-executive-summary) (Executive Summary)
 
 ### 1.1 任务基本信息
 
@@ -629,7 +629,7 @@ Step 1: [操作描述]
 
 ## 第九章：经验总结与方法论 (Lessons Learned & Methodologies)
 
-### 9.1 核心方法论提炼
+### 9.1 核心[方法论提炼](terminology.md#62-方法论提炼-methodology-extraction)
 
 **方法论1：[方法名称]**
 
@@ -644,7 +644,7 @@ Step 1: [操作描述]
 
 **效果验证**：[在本次任务中的应用效果]
 
-### 9.2 最佳实践清单
+### 9.2 [最佳实践](terminology.md#74-最佳实践-best-practice)清单
 
 #### ✅ 做得好的（Keep Doing）
 
@@ -734,9 +734,7 @@ Step 1: [操作描述]
 
 ## 附录
 
-### 附录A：术语表
-
-[参见 terminology.md]
+### 附录A：[术语表](terminology.md)
 
 ### 附录B：参考资料
 

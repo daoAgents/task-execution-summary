@@ -827,7 +827,7 @@ task-summary-sprint24-review-20260409-143022.json
 |-------|------|------|
 | `completeness_rate` | float | 信息完整率（0-1），衡量报告涵盖的任务关键信息占应涵盖信息的比例。>0.90 为合格 |
 | `accuracy_confidence` | float | 准确性置信度（0-1），基于事实可追溯性和数据一致性评估。>0.95 为优秀 |
-| `information_gaps` | array | 信息缺口列表，每个元素包含 section（缺失章节）、issue（问题描述）、severity（严重程度）、suggestion（补充建议） |
+| `information_gaps` | array | 信息缺口列表，每个元素包含 section（缺失章节）、issue（问题描述）、severity（[严重程度](terminology.md#44-严重程度-severity)）、suggestion（补充建议） |
 | `warnings` | array | 警告信息列表，每个元素包含 code（警告码）、message（警告消息）、severity（严重程度：info/warning/error） |
 | `overall_quality_score` | integer | 综合质量评分（0-100），基于完整性、准确性、结构规范性等多维度加权计算 |
 
@@ -846,9 +846,9 @@ task-summary-sprint24-review-20260409-143022.json
 
 | 字段名 | 类型 | 说明 | 计算公式 |
 |-------|------|------|---------|
-| `goal_achievement_rate` | float | 目标达成率 | 实际完成目标数 / 总目标数 |
-| `time_efficiency_ratio` | float | 时间效能比 | 计划总时长 / 实际总时长（>1 表示提前，<1 表示超时） |
-| `resource_utilization_rate` | float | 资源利用率 | 有效使用资源数 / 总引入资源数 |
+| `goal_achievement_rate` | float | [目标达成率](terminology.md#26-达成率-achievement-rate) | 实际完成目标数 / 总目标数 |
+| `time_efficiency_ratio` | float | [时间效能比](terminology.md#34-时效比-time-efficiency-ratio) | 计划总时长 / 实际总时长（>1 表示提前，<1 表示超时） |
+| `resource_utilization_rate` | float | [资源利用率](terminology.md#44-利用率-utilization-rate) | 有效使用资源数 / 总引入资源数 |
 | `problem_resolution_rate` | float | 问题解决率 | 已解决问题数 / 总问题数 |
 
 #### file_info 对象（仅在 save_to_file=true 时存在）
@@ -997,8 +997,6 @@ task-summary-sprint24-review-20260409-143022.json
 
 ### 5.1 示例一：最小调用（仅 task_name）
 
-**场景说明**：快速生成一份基本报告，让系统自动推断所有可选参数，适合初次使用或快速尝试的场景。
-
 **请求报文**：
 
 ```json
@@ -1009,54 +1007,11 @@ task-summary-sprint24-review-20260409-143022.json
 }
 ```
 
-**预期行为**：
-
-- ✅ task_type：自动检测为 `learning`（根据关键词"学习"推断）
-- ✅ time_range：从对话历史自动提取时间范围
-- ✅ detail_level：使用默认值 `standard`
-- ✅ template_variant：使用默认值 `standard`
-- ✅ output_format：使用默认值 `markdown`
-- ✅ 所有章节：全部包含（1-10章）
-- ✅ 语言风格：使用默认值 `professional`
-- ✅ 保存文件：自动生成路径并保存
-
-**适用场景**：
-
-- 第一次使用本接口，希望快速体验
-- 任务简单明确，不需要特殊配置
-- 用于测试接口连通性和基本功能
-- 作为后续调优的基础版本
-
-**响应示例**（节选关键字段）：
-
-```json
-{
-  "success": true,
-  "report_id": "rpt_20260409_min123",
-  "processing_time_ms": 2800,
-  "report": {
-    "title": "任务执行总结报告：Docker容器化部署学习",
-    "word_count": 3850,
-    "chapter_count": 10,
-    "metadata": {
-      "task_type": "auto-detected → learning",
-      "template_used": "standard",
-      "detail_level": "standard"
-    }
-  },
-  "statistics": {
-    "total_phases": 5,
-    "total_problems": 8,
-    "suggestions_count": 6
-  }
-}
-```
+**说明**：系统自动推断所有可选参数。完整示例请参阅 [examples-v2.md](examples-v2.md#示例-2-sprint-复盘最小化调用)。
 
 ---
 
 ### 5.2 示例二：标准调用（常用配置组合）
-
-**场景说明**：软件开发类任务的典型配置，指定任务类型、关注特定分析维度、排除无关章节，这是实际生产环境中最常用的调用模式。
 
 **请求报文**：
 
@@ -1069,67 +1024,29 @@ task-summary-sprint24-review-20260409-143022.json
       "start_time": "2026-03-15T09:00:00+08:00",
       "end_time": "2026-03-28T18:00:00+08:00"
     },
-    "description": "对电商平台的核心支付模块进行技术重构，将平均交易处理时间从800ms降低至200ms以内，同时修复并发安全问题并通过安全审计",
+    "description": "对电商平台的核心支付模块进行技术重构...",
     "participants": [
-      {"name": "张伟", "role": "Tech Lead", "responsibility": "架构设计和核心开发"},
-      {"name": "李娜", "role": "后端开发", "responsibility": "业务逻辑实现"},
-      {"name": "王强", "role": "QA工程师", "responsibility": "测试和性能验证"}
-    ],
-    "context_data": {
-      "objectives": [
-        "将P99响应时间从800ms降至200ms以内",
-        "修复3个高优先级的并发安全问题",
-        "通过OWASP Top 10安全扫描",
-        "保持99.9%的系统可用性"
-      ],
-      "tools_used": ["IntelliJ IDEA", "Git", "JMeter", "SonarQube", "Docker"],
-      "technologies": ["Java 17", "Spring Boot 3.x", "Redis", "MySQL 8.0", "RabbitMQ"]
-    }
+      {"name": "张伟", "role": "Tech Lead"},
+      {"name": "李娜", "role": "后端开发"}
+    ]
   },
   "generation_options": {
     "detail_level": "standard",
-    "template_variant": "standard",
     "excluded_chapters": [7],
-    "language_style": "professional",
-    "focus_dimensions": ["goal_achievement", "time_efficiency", "problem_patterns"],
-    "output_format": "markdown"
+    "focus_dimensions": ["goal_achievement", "time_efficiency", "problem_patterns"]
   },
   "output_config": {
     "save_to_file": true,
-    "file_path": "./reports/payment-refactor-20260328.md",
-    "include_metadata": true,
-    "custom_header": "> **项目**: 电商平台V2.0重构\n> **模块**: 支付系统\n> **团队**: 平台研发组"
+    "file_path": "./reports/payment-refactor-20260328.md"
   }
 }
 ```
 
-**配置解读**：
-
-- **task_type: development**：明确指定为开发类任务，强化技术和代码相关分析
-- **excluded_chapters: [7]**：排除团队协作分析（虽然有多人参与，但本次聚焦技术层面）
-- **focus_dimensions**: 重点分析目标达成、时间效率和问题模式三个维度，其他维度简化处理
-- **custom_header**: 添加项目上下文信息，使报告更具归属感
-- **完整的时间范围**：提供精确的开始和结束时间，确保时间效能分析的准确性
-
-**预期输出特点**：
-
-- 📊 篇幅：约12页（4200字左右）
-- 🎯 重点章节：第五章（问题与解决方案）和第八章（多维度分析）将获得更多篇幅
-- 📈 数据丰富度：包含详细的性能对比数据（重构前后的响应时间曲线）
-- 💡 建议：预计生成6-8条改进建议，重点关注性能优化和代码质量
-
-**适用场景**：
-
-- 软件开发项目的阶段性总结
-- 技术重构或重大功能开发的复盘
-- 需要向技术管理层汇报的项目结项
-- 作为团队知识库的技术资产归档
+**说明**：软件开发类任务的典型配置。完整示例请参阅 [examples-v2.md](examples-v2.md#示例-1-软件开发任务标准调用)。
 
 ---
 
 ### 5.3 示例三：完全配置调用（所有参数都指定）
-
-**场景说明**：学习类任务的详细配置，使用学习专用模板，最大化报告的信息量和教育价值，适合作为个人学习档案或导师制学习记录。
 
 **请求报文**：
 
@@ -1142,86 +1059,28 @@ task-summary-sprint24-review-20260409-143022.json
       "start_time": "2026-02-15T20:00:00+08:00",
       "end_time": "2026-03-28T23:59:59+08:00"
     },
-    "description": "系统学习React 18框架，从基础概念到高级模式，独立完成个人知识管理系统(PKM App)实战项目，掌握Hooks、Redux Toolkit、TypeScript集成、路由和测试等全方位技能",
+    "description": "系统学习React 18框架，掌握Hooks、Redux Toolkit等技能",
     "participants": [
-      {"name": "学习者本人", "role": "学习者"},
-      {"name": "技术导师老李", "role": "导师", "responsibility": "每周一次1v1指导和Code Review"}
+      {"name": "学习者本人", "role": "学习者"}
     ],
     "context_data": {
-      "objectives": [
-        "掌握React 18核心概念（JSX、组件、Hooks、虚拟DOM）",
-        "熟练使用Redux Toolkit进行状态管理",
-        "能够独立开发包含11个功能模块的中型SPA应用",
-        "编写单元测试达到75%以上的覆盖率",
-        "建立从前端工程化的最佳实践经验"
-      ],
-      "constraints": [
-        "每天只能投入1-2小时的业余时间",
-        "缺乏付费课程预算，主要依靠免费资源",
-        "没有现成的实战项目机会，需自己构思Side Project"
-      ],
-      "tools_used": ["VS Code", "Git/GitHub", "Chrome DevTools", "npm/yarn", "Vite"],
-      "technologies": ["React 18", "TypeScript 5.x", "Redux Toolkit", "React Router v6", "Jest", "Testing Library"],
-      "external_references": [
-        "https://react.dev (官方文档)",
-        "https://epicreact.dev (课程)",
-        "https://github.com/reduxjs/redux-toolkit (官方仓库)"
-      ],
-      "custom_metadata": {
-        "learning_domain": "前端开发",
-        "starting_level": "入门（有JavaScript基础，未接触过React）",
-        "target_level": "熟练（能独立开发中型应用）",
-        "total_learning_hours_estimated": 60
-      }
+      "objectives": ["掌握React 18核心概念", "熟练使用Redux Toolkit"],
+      "technologies": ["React 18", "TypeScript", "Redux Toolkit"]
     }
   },
   "generation_options": {
     "detail_level": "detailed",
     "template_variant": "learning",
-    "included_chapters": [1, 2, 3, 4, 5, 6, 8, 9, 10],
-    "language_style": "professional",
-    "focus_dimensions": [],
-    "output_format": "markdown"
+    "included_chapters": [1, 2, 3, 4, 5, 6, 8, 9, 10]
   },
   "output_config": {
     "save_to_file": true,
-    "file_path": "D:/learning-logs/react18-learning-journey-20260328.md",
-    "include_metadata": true,
-    "append_to_existing": false,
-    "encoding": "utf-8",
-    "custom_header": "> # React 18 学习之旅\n>\n> **学习者**: [您的姓名]\n> **学习周期**: 2026-02-15 ~ 2026-03-28（共6周）\n> **学习方式**: 自学 + 导师指导\n> **产出物**: 个人知识管理系统(PKM App)",
-    "custom_footer": "---\n\n*本报告由 Task Execution Summary Generator 自动生成*\n*学习永不止步，Keep Learning! 🚀*"
+    "file_path": "D:/learning-logs/react18-learning-journey-20260328.md"
   }
 }
 ```
 
-**配置亮点**：
-
-- **template_variant: learning**：使用学习专用模板，自动调整章节角度（如第七章变为"学习支持系统"，第九章和第十章成为核心重点章节）
-- **detail_level: detailed**：生成最详细的报告（预计20-30页），包含完整的学习历程记录、顿悟时刻、难点攻克过程、知识图谱等
-- **丰富的 context_data**：提供了学习目标、约束条件、工具链、技术栈、参考资料等全面的上下文信息，这将显著提高报告的质量和个性化程度
-- **custom_metadata 中的学习元数据**：记录了学习领域、起止水平、预估学时等信息，帮助系统更好地理解学习背景
-- **精美的 custom_header 和 custom_footer**：为报告增添了个人色彩和激励性的结语
-
-**预期输出特点**：
-
-- 📖 篇幅：约25页（10000-12000字）
-- 🎨 特色章节：
-  - 第四章：关键学习节点（记录顿悟时刻 Aha Moments 和突破性进展）
-  - 第五章：学习难点与攻克（详细剖析每个难点的攻克过程和心理变化）
-  - 第六章：学习资源汇总（评估每种资源的效率和有用度）
-  - 第九章：知识体系与方法论沉淀（核心章节，提炼3-5个学习方法论）
-  - 第十章：后续学习路线图（制定短期、中期、长期计划）
-- 📊 特色数据：技能雷达图、学习曲线图、知识点掌握矩阵、前后水平对比表
-- 💡 产出物：预计提炼4-6个学习方法论、10-15条改进建议、完整的学习路线图
-
-**适用场景**：
-
-- 系统学习一门新技术后的全面总结
-- 作为个人学习档案的一部分（定期更新）
-- 准备向导师或HR展示学习成果
-- 制作培训材料或分享给同伴的学习经验
-- 作为自我反思和元认知训练的工具
+**说明**：学习类任务的详细配置，使用学习专用模板。完整示例请参阅 [examples-v2.md](examples-v2.md)。
 
 ---
 

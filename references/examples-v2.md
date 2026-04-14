@@ -11,21 +11,11 @@
 
 ---
 
-## 📌 文档阅读指南
-
-| 读者类型 | 推荐阅读内容 | 目的 |
-|---------|------------|------|
-| **集成开发者** | 全部 4 个示例 | 理解完整的输入输出格式、错误处理和降级机制 |
-| **测试工程师** | 示例 1 + 示例 3 + 示例 4 | 编写自动化测试用例的参考数据 |
-| **普通用户** | 示例 1 + 示例 2 | 学习如何正确调用技能获取高质量报告 |
-
-### 响应状态分类
-
-| success 字段 | degraded 字段 | 含义 | 处理建议 |
-|-------------|--------------|------|---------|
-| `true` | 无/`false` | ✅ 完全成功 | 直接使用报告 |
-| `true` | `true` | ⚠️ 降级成功 | 报告可用但质量受影响，查看 warnings |
-| `false` | - | ❌ 执行失败 | 根据 error 信息修复后重试 |
+> 📖 **文档阅读指南**: 集成开发者建议阅读全部 4 个示例；测试工程师关注示例 1、3、4；普通用户关注示例 1、2。
+>
+> 📋 **响应状态**: `success=true` 表示成功；`success=true` + `degraded=true` 表示降级成功；`success=false` 表示执行失败。
+>
+> 完整参数定义见 [api-reference-quick.md](api-reference-quick.md)
 
 ---
 
@@ -143,10 +133,7 @@
 }
 ```
 
-**请求特点**:
-- ✅ **仅提供必填的 `task_name`**，其他所有参数使用默认值
-- ✅ **零配置调用**，适合快速场景
-- ⚠️ 系统将自动推断 `task_type`、`detail_level`、`template_variant` 等参数
+> 完整参数定义见 [api-reference-quick.md](api-reference-quick.md)
 
 ### 预期响应
 
@@ -232,15 +219,6 @@
   }
 }
 ```
-
-**错误清单**:
-
-| # | 参数 | 错误类型 | 错误说明 |
-|---|------|---------|---------|
-| 1 | `task_context.task_name` | **E001 - 缺少必填参数** | `task_context` 为空对象，缺少 `task_name` 字段 |
-| 2 | `generation_options.detail_level` | **E002 - 无效枚举值** | 值为 `"invalid_value"`，不在 `[summary, standard, detailed]` 中 |
-| 3 | `generation_options.included_chapters[2]` | **E003 - 参数值越界** | 值为 `99`，超出合法范围 `[1, 10]` |
-| 4 | `generation_options.excluded_chapters` | **E005 - 章节组合无效** | 排除了全部 10 个章节，至少需保留第 1、9、10 章 |
 
 > 完整错误码定义见 [error-codes-quick.md](error-codes-quick.md)
 
@@ -349,10 +327,7 @@
 }
 ```
 
-**请求特点**:
-- ✅ `task_name` 和 `task_type` 正确填写
-- ⚠️ 请求 `detail_level: "detailed"`（高详细程度）
-- 💭 **隐含风险**: 对话历史较短，可能无法支撑 detailed 级别的信息量需求
+> 完整参数定义见 [api-reference-quick.md](api-reference-quick.md)
 
 ### 预期响应（带警告的成功）
 
@@ -506,7 +481,7 @@
 | **error-codes-quick.md** | 错误码速查 | [error-codes-quick.md](error-codes-quick.md) |
 | **execution-flow.md** | 7 步执行流程详解 | [execution-flow.md](execution-flow.md) |
 | **templates.md** | 4 种模板变体的结构定义 | [templates.md](templates.md) |
-| **terminology.md** | 86 个专业术语表 | [terminology.md](terminology.md) |
+| **terminology.md** | 86 个专业术语定义 | [terminology.md](terminology.md) |
 
 ---
 
