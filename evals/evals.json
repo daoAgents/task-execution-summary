@@ -1,1 +1,731 @@
-{"skill_name": "task-execution-summary", "version": "1.0.0", "created_date": "2026-04-09", "description": "任务执行总结报告生成器技能的完整测试用例集，覆盖软件开发、项目管理、故障排查和学习成长四大核心场景", "evals": [{"id": 1, "name": "software-development-summary", "category": "软件开发", "difficulty": "中等", "prompt": "我刚刚完成了一个用户认证模块的开发任务，用了大概2小时。一开始我想用JWT做token管理，后来改成了Session方式因为更简单。中间遇到了CORS跨域问题，查了半天文档才解决。最后测试通过了3个接口，帮我总结一下整个过程。", "expected_output": {"description": "应生成一份完整的软件开发任务总结报告，包含：任务背景（开发用户认证模块）、时间线（约2小时）、关键决策（JWT vs Session的选择及原因）、遇到的问题（CORS跨域问题及解决方案）、最终成果（3个接口测试通过）、改进建议（如提前调研CORS配置、建立技术选型决策流程等）", "key_elements": ["任务名称：用户认证模块开发", "总耗时：约2小时", "决策记录：技术选型从JWT改为Session", "问题描述：CORS跨域配置问题", "最终成果：3个API接口开发完成并通过测试", "至少1条改进建议", "至少1条成功经验"], "format_requirements": ["包含10章标准结构（或用户未排除时的完整版）", "使用Markdown格式", "包含至少2个数据表格（时间线表、决策清单表或问题清单表）", "语言专业且流畅"]}, "assertions": [{"name": "report_contains_task_name", "description": "报告中应包含任务名称'用户认证模块'或类似表述", "type": "text_inclusion", "expected": ["用户认证", "认证模块"]}, {"name": "report_contains_timeline", "description": "报告应包含时间线或阶段划分信息", "type": "structure_check", "expected": ["阶段", "时间", "耗时"]}, {"name": "report_contains_decision", "description": "报告应记录JWT vs Session的技术选型决策", "type": "text_inclusion", "expected": ["JWT", "Session", "决策", "选择"]}, {"name": "report_contains_problem", "description": "报告应记录CORS跨域问题及其解决方案", "type": "text_inclusion", "expected": ["CORS", "跨域", "问题"]}, {"name": "report_contains_suggestions", "description": "报告应包含至少1条改进建议", "type": "count_check", "min_count": 1, "keywords": ["建议", "改进", "优化"]}, {"name": "report_contains_achievements", "description": "报告应明确记录最终成果（3个接口通过测试）", "type": "text_inclusion", "expected": ["3", "接口", "测试", "通过"]}, {"name": "report_has_tables", "description": "报告应包含至少2个数据表格", "type": "structure_check", "expected": ["|", "---", "|"]}], "files": []}, {"id": 2, "name": "sprint-retrospective", "category": "项目管理", "difficulty": "较高", "prompt": "我们这个2周的Sprint刚结束，本来计划完成8个任务，实际只完成了6个。主要是因为第2周突然来了2个紧急的线上bug需要处理，占用了3天时间。团队成员有4个人，前端2个后端2个，整体配合还可以但有时候前后端联调会有等待。帮我们做一个Sprint复盘。", "expected_output": {"description": "应生成一份项目管理Sprint复盘报告，包含：Sprint基本信息（2周期、4人团队、计划8个任务实际完成6个）、时间线和阶段划分、关键问题和原因分析（紧急bug占用时间）、团队协作分析（前后端联调效率）、量化指标（完成率75%）、改进建议（如预留buffer时间、优化联调流程、建立紧急响应机制等）", "key_elements": ["Sprint周期：2周", "团队规模：4人（前端2后端2）", "计划vs实际：计划8个任务，完成6个（75%达成率）", "主要原因：紧急bug处理占用3天", "协作问题：前后端联调等待时间", "量化数据和改进建议"], "format_requirements": ["包含团队协作分析章节（第七章）", "使用Markdown格式", "包含目标达成度量化分析表格", "包含至少3条可操作的改进建议", "语言专业且客观"]}, "assertions": [{"name": "report_contains_sprint_info", "description": "报告应包含Sprint基本周期信息（2周）", "type": "text_inclusion", "expected": ["Sprint", "2周", "两周"]}, {"name": "report_contains_team_info", "description": "报告应记录团队成员构成信息（4人，前端2后端2）", "type": "text_inclusion", "expected": ["4", "前端", "后端", "团队"]}, {"name": "report_contains_completion_rate", "description": "报告应计算并展示任务完成率（75%）", "type": "text_inclusion", "expected": ["8", "6", "75%", "完成率", "达成率"]}, {"name": "report_contains_bug_impact", "description": "报告应分析紧急bug对进度的影响（占用3天）", "type": "text_inclusion", "expected": ["bug", "紧急", "3天", "影响"]}, {"name": "report_contains_collaboration_analysis", "description": "报告应包含团队协作分析章节和联调等待问题", "type": "text_inclusion", "expected": ["协作", "联调", "等待", "沟通"]}, {"name": "report_contains_improvement_suggestions", "description": "报告应包含至少3条改进建议", "type": "count_check", "min_count": 3, "keywords": ["建议", "改进", "优化", "提升"]}, {"name": "report_has_quantitative_data", "description": "报告应包含量化的数据分析表格", "type": "structure_check", "expected": ["|", "%", "数量"]}], "files": []}, {"id": 3, "name": "incident-postmortem", "category": "故障排查", "difficulty": "高", "prompt": "昨天晚上我们的生产环境服务突然挂了，从发现问题到恢复用了大概1.5小时。先是监控报警说CPU利用率99%，然后登录服务器一看是有个死循环的定时任务在疯狂跑，杀掉进程就好了。但是根本原因是代码里有个边界条件没处理好，导致定时任务异常重试。我已经修复了代码并部署了，把这次故障排查过程记录一下。", "expected_output": {"description": "应生成一份完整的故障排查事后分析报告（Postmortem），包含：故障概述（生产环境服务宕机）、时间线（发现-诊断-修复-恢复共1.5小时）、根因分析（边界条件导致死循环重试）、解决方案（杀进程+代码修复+部署）、影响评估、预防措施（如增加边界检查、设置资源限制、完善监控告警等）、经验教训", "key_elements": ["故障现象：生产环境服务不可用", "总耗时：1.5小时", "关键指标：CPU利用率99%", "根本原因：代码边界条件导致定时任务死循环", "临时解决方案：终止异常进程", "永久解决方案：修复代码并部署", "预防措施和监控建议"], "format_requirements": ["包含详细的问题排查过程回溯（第五章）", "使用Markdown格式", "包含故障时间线表格", "包含根因分析和分类", "包含至少3条预防措施或改进建议", "语言专业且客观，符合Postmortem规范"]}, "assertions": [{"name": "report_contains_incident_overview", "description": "报告应描述故障基本情况（生产环境服务挂了）", "type": "text_inclusion", "expected": ["生产环境", "服务", "挂了", "宕机", "故障"]}, {"name": "report_contains_timeline", "description": "报告应包含完整的故障处理时间线（1.5小时）", "type": "text_inclusion", "expected": ["1.5小时", "90分钟", "时间线", "耗时"]}, {"name": "report_contains_symptom", "description": "报告应记录关键故障症状（CPU利用率99%）", "type": "text_inclusion", "expected": ["CPU", "99%", "利用率", "监控"]}, {"name": "report_contains_root_cause", "description": "报告应深入分析根本原因（边界条件导致死循环）", "type": "text_inclusion", "expected": ["边界条件", "死循环", "定时任务", "重试", "根因", "根本原因"]}, {"name": "report_contains_solution", "description": "报告应记录完整的解决方案（杀进程+代码修复+部署）", "type": "text_inclusion", "expected": ["修复", "部署", "进程", "代码"]}, {"name": "report_contains_prevention_measures", "description": "报告应包含至少3条预防措施或改进建议", "type": "count_check", "min_count": 3, "keywords": ["预防", "措施", "建议", "改进", "监控", "告警", "限制"]}, {"name": "report_has_troubleshooting_process", "description": "报告应包含结构化的问题排查过程（现象→诊断→定位→解决→验证）", "type": "structure_check", "expected": ["排查", "诊断", "定位", "验证", "过程"]}], "files": []}, {"id": 4, "name": "learning-project-summary", "category": "学习成长", "difficulty": "中等", "prompt": "我这周花了大约15个小时学习了Docker容器化技术，从零开始到成功把自己的一个Web应用容器化部署了。中间看了官方文档、做了几个练习项目、最后还踩了不少坑（比如volume挂载权限问题、网络配置搞不懂）。现在已经基本掌握了镜像构建、容器编排这些核心概念了。帮我做个学习总结。", "expected_output": {"description": "应生成一份完整的学习项目总结报告，包含：学习目标（掌握Docker容器化技术）、时间投入（15小时）、学习路径（文档→练习→实战）、知识体系构建（镜像构建、容器编排等核心概念）、遇到的困难（volume权限、网络配置）、学习成果（成功容器化部署Web应用）、学习方法论提炼、后续学习规划建议", "key_elements": ["学习主题：Docker容器化技术", "总时长：15小时", "学习路径：官方文档→练习项目→实战应用", "核心知识点：镜像构建、容器编排", "主要困难：volume挂载权限、网络配置", "最终成果：Web应用成功容器化部署", "学习方法和后续规划建议"], "format_requirements": ["包含个人成长记录章节（第九章第4节）", "使用Markdown格式", "包含知识图谱或技能提升记录", "包含学习路径或方法论提炼", "包含至少2条学习建议或后续规划", "语言积极正面，体现成长性"]}, "assertions": [{"name": "report_contains_learning_topic", "description": "报告应明确标识学习主题为Docker容器化技术", "type": "text_inclusion", "expected": ["Docker", "容器化", "学习"]}, {"name": "report_contains_time_investment", "description": "报告应记录学习时间投入（15小时）", "type": "text_inclusion", "expected": ["15小时", "15个小时", "时间", "时长"]}, {"name": "report_contains_knowledge_points", "description": "报告应列出掌握的核心知识点（镜像构建、容器编排）", "type": "text_inclusion", "expected": ["镜像", "构建", "容器", "编排", "概念"]}, {"name": "report_contains_challenges", "description": "报告应记录学习中遇到的主要困难（volume权限、网络配置）", "type": "text_inclusion", "expected": ["volume", "权限", "网络", "配置", "坑", "困难", "问题"]}, {"name": "report_contains_achievement", "description": "报告应明确记录学习成果（Web应用容器化部署成功）", "type": "text_inclusion", "expected": ["Web应用", "部署", "成功", "成果"]}, {"name": "report_contains_learning_methodology", "description": "报告应提炼学习方法论或最佳实践", "type": "text_inclusion", "expected": ["方法", "经验", "实践", "步骤", "路径"]}, {"name": "report_contains_future_plan", "description": "报告应包含后续学习规划或建议", "type": "count_check", "min_count": 2, "keywords": ["后续", "下一步", "规划", "建议", "继续", "深入"]}], "files": []}]}
+{
+  "skill_name": "task-execution-summary",
+  "version": "1.0.0",
+  "created_date": "2026-04-09",
+  "description": "任务执行总结报告生成器技能的完整测试用例集，覆盖软件开发、项目管理、故障排查、学习成长四大核心场景，以及异常路径（模糊输入、冲突参数、极简任务）、大型项目、安全事件、技术研究和国际化等扩展场景",
+  "evals": [
+    {
+      "id": 1,
+      "name": "software-development-summary",
+      "category": "软件开发",
+      "difficulty": "中等",
+      "prompt": "我刚刚完成了一个用户认证模块的开发任务，用了大概2小时。一开始我想用JWT做token管理，后来改成了Session方式因为更简单。中间遇到了CORS跨域问题，查了半天文档才解决。最后测试通过了3个接口，帮我总结一下整个过程。",
+      "expected_output": {
+        "description": "应生成一份完整的软件开发任务总结报告，包含：任务背景（开发用户认证模块）、时间线（约2小时）、关键决策（JWT vs Session的选择及原因）、遇到的问题（CORS跨域问题及解决方案）、最终成果（3个接口测试通过）、改进建议（如提前调研CORS配置、建立技术选型决策流程等）"
+      },
+      "key_elements": [
+        "任务名称：用户认证模块开发",
+        "总耗时：约2小时",
+        "决策记录：技术选型从JWT改为Session",
+        "问题描述：CORS跨域配置问题",
+        "最终成果：3个API接口开发完成并通过测试",
+        "至少1条改进建议",
+        "至少1条成功经验"
+      ],
+      "format_requirements": [
+        "包含10章标准结构（或用户未排除时的完整版）",
+        "使用Markdown格式",
+        "包含至少2个数据表格（时间线表、决策清单表或问题清单表）",
+        "语言专业且流畅"
+      ],
+      "assertions": [
+        {
+          "name": "report_contains_task_name",
+          "type": "text_inclusion",
+          "expected": ["用户认证", "认证模块"]
+        },
+        {
+          "name": "report_contains_timeline",
+          "type": "structure_check",
+          "expected": ["阶段", "时间", "耗时"]
+        },
+        {
+          "name": "report_contains_decision",
+          "type": "text_inclusion",
+          "expected": ["JWT", "Session", "决策", "选择"]
+        },
+        {
+          "name": "report_contains_problem",
+          "type": "text_inclusion",
+          "expected": ["CORS", "跨域", "问题"]
+        },
+        {
+          "name": "report_contains_suggestions",
+          "type": "count_check",
+          "min_count": 1,
+          "keywords": ["建议", "改进", "优化"]
+        },
+        {
+          "name": "report_contains_achievements",
+          "type": "text_inclusion",
+          "expected": ["3", "接口", "测试", "通过"]
+        },
+        {
+          "name": "report_has_tables",
+          "type": "structure_check",
+          "expected": ["|", "---", "|"]
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "sprint-retrospective",
+      "category": "项目管理",
+      "difficulty": "较高",
+      "prompt": "我们这个2周的Sprint刚结束，本来计划完成8个任务，实际只完成了6个。主要是因为第2周突然来了2个紧急的线上bug需要处理，占用了3天时间。团队成员有4个人，前端2个后端2个，整体配合还可以但有时候前后端联调会有等待。帮我们做一个Sprint复盘。",
+      "expected_output": {
+        "description": "应生成一份项目管理Sprint复盘报告，包含：Sprint基本信息（2周期、4人团队、计划8个任务实际完成6个）、时间线和阶段划分、关键问题和原因分析（紧急bug占用时间）、团队协作分析（前后端联调效率）、量化指标（完成率75%）、改进建议（如预留buffer时间、优化联调流程、建立紧急响应机制等）"
+      },
+      "key_elements": [
+        "Sprint周期：2周",
+        "团队规模：4人（前端2后端2）",
+        "计划vs实际：计划8个任务，完成6个（75%达成率）",
+        "主要原因：紧急bug处理占用3天",
+        "协作问题：前后端联调等待时间",
+        "量化数据和改进建议"
+      ],
+      "format_requirements": [
+        "包含团队协作分析章节（第七章）",
+        "使用Markdown格式",
+        "包含目标达成度量化分析表格",
+        "包含至少3条可操作的改进建议",
+        "语言专业且客观"
+      ],
+      "assertions": [
+        {
+          "name": "report_contains_sprint_info",
+          "type": "text_inclusion",
+          "expected": ["Sprint", "2周", "两周"]
+        },
+        {
+          "name": "report_contains_team_info",
+          "type": "text_inclusion",
+          "expected": ["4", "前端", "后端", "团队"]
+        },
+        {
+          "name": "report_contains_completion_rate",
+          "type": "text_inclusion",
+          "expected": ["8", "6", "75%", "完成率", "达成率"]
+        },
+        {
+          "name": "report_contains_bug_impact",
+          "type": "text_inclusion",
+          "expected": ["bug", "紧急", "3天", "影响"]
+        },
+        {
+          "name": "report_contains_collaboration_analysis",
+          "type": "text_inclusion",
+          "expected": ["协作", "联调", "等待", "沟通"]
+        },
+        {
+          "name": "report_contains_improvement_suggestions",
+          "type": "count_check",
+          "min_count": 3,
+          "keywords": ["建议", "改进", "优化", "提升"]
+        },
+        {
+          "name": "report_has_quantitative_data",
+          "type": "structure_check",
+          "expected": ["|", "%", "数量"]
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 3,
+      "name": "incident-postmortem",
+      "category": "故障排查",
+      "difficulty": "高",
+      "prompt": "昨天晚上我们的生产环境服务突然挂了，从发现问题到恢复用了大概1.5小时。先是监控报警说CPU利用率99%，然后登录服务器一看是有个死循环的定时任务在疯狂跑，杀掉进程就好了。但是根本原因是代码里有个边界条件没处理好，导致定时任务异常重试。我已经修复了代码并部署了，把这次故障排查过程记录一下。",
+      "expected_output": {
+        "description": "应生成一份完整的故障排查事后分析报告（Postmortem），包含：故障概述（生产环境服务宕机）、时间线（发现-诊断-修复-恢复共1.5小时）、根因分析（边界条件导致死循环重试）、解决方案（杀进程+代码修复+部署）、影响评估、预防措施（如增加边界检查、设置资源限制、完善监控告警等）、经验教训"
+      },
+      "key_elements": [
+        "故障现象：生产环境服务不可用",
+        "总耗时：1.5小时",
+        "关键指标：CPU利用率99%",
+        "根本原因：代码边界条件导致定时任务死循环",
+        "临时解决方案：终止异常进程",
+        "永久解决方案：修复代码并部署",
+        "预防措施和监控建议"
+      ],
+      "format_requirements": [
+        "包含详细的问题排查过程回溯（第五章）",
+        "使用Markdown格式",
+        "包含故障时间线表格",
+        "包含根因分析和分类",
+        "包含至少3条预防措施或改进建议",
+        "语言专业且客观，符合Postmortem规范"
+      ],
+      "assertions": [
+        {
+          "name": "report_contains_incident_overview",
+          "type": "text_inclusion",
+          "expected": ["生产环境", "服务", "挂了", "宕机", "故障"]
+        },
+        {
+          "name": "report_contains_timeline",
+          "type": "text_inclusion",
+          "expected": ["1.5小时", "90分钟", "时间线", "耗时"]
+        },
+        {
+          "name": "report_contains_symptom",
+          "type": "text_inclusion",
+          "expected": ["CPU", "99%", "利用率", "监控"]
+        },
+        {
+          "name": "report_contains_root_cause",
+          "type": "text_inclusion",
+          "expected": ["边界条件", "死循环", "定时任务", "重试", "根因", "根本原因"]
+        },
+        {
+          "name": "report_contains_solution",
+          "type": "text_inclusion",
+          "expected": ["修复", "部署", "进程", "代码"]
+        },
+        {
+          "name": "report_contains_prevention_measures",
+          "type": "count_check",
+          "min_count": 3,
+          "keywords": ["预防", "措施", "建议", "改进", "监控", "告警", "限制"]
+        },
+        {
+          "name": "report_has_troubleshooting_process",
+          "type": "structure_check",
+          "expected": ["排查", "诊断", "定位", "验证", "过程"]
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 4,
+      "name": "learning-project-summary",
+      "category": "学习成长",
+      "difficulty": "中等",
+      "prompt": "我这周花了大约15个小时学习了Docker容器化技术，从零开始到成功把自己的一个Web应用容器化部署了。中间看了官方文档、做了几个练习项目、最后还踩了不少坑（比如volume挂载权限问题、网络配置搞不懂）。现在已经基本掌握了镜像构建、容器编排这些核心概念了。帮我做个学习总结。",
+      "expected_output": {
+        "description": "应生成一份完整的学习项目总结报告，包含：学习目标（掌握Docker容器化技术）、时间投入（15小时）、学习路径（文档→练习→实战）、知识体系构建（镜像构建、容器编排等核心概念）、遇到的困难（volume权限、网络配置）、学习成果（成功容器化部署Web应用）、学习方法论提炼、后续学习规划建议"
+      },
+      "key_elements": [
+        "学习主题：Docker容器化技术",
+        "总时长：15小时",
+        "学习路径：官方文档→练习项目→实战应用",
+        "核心知识点：镜像构建、容器编排",
+        "主要困难：volume挂载权限、网络配置",
+        "最终成果：Web应用成功容器化部署",
+        "学习方法和后续规划建议"
+      ],
+      "format_requirements": [
+        "包含个人成长记录章节（第九章第4节）",
+        "使用Markdown格式",
+        "包含知识图谱或技能提升记录",
+        "包含学习路径或方法论提炼",
+        "包含至少2条学习建议或后续规划",
+        "语言积极正面，体现成长性"
+      ],
+      "assertions": [
+        {
+          "name": "report_contains_learning_topic",
+          "type": "text_inclusion",
+          "expected": ["Docker", "容器化", "学习"]
+        },
+        {
+          "name": "report_contains_time_investment",
+          "type": "text_inclusion",
+          "expected": ["15小时", "15个小时", "时间", "时长"]
+        },
+        {
+          "name": "report_contains_knowledge_points",
+          "type": "text_inclusion",
+          "expected": ["镜像", "构建", "容器", "编排", "概念"]
+        },
+        {
+          "name": "report_contains_challenges",
+          "type": "text_inclusion",
+          "expected": ["volume", "权限", "网络", "配置", "坑", "困难", "问题"]
+        },
+        {
+          "name": "report_contains_achievement",
+          "type": "text_inclusion",
+          "expected": ["Web应用", "部署", "成功", "成果"]
+        },
+        {
+          "name": "report_contains_learning_methodology",
+          "type": "text_inclusion",
+          "expected": ["方法", "经验", "实践", "步骤", "路径"]
+        },
+        {
+          "name": "report_contains_future_plan",
+          "type": "count_check",
+          "min_count": 2,
+          "keywords": ["后续", "下一步", "规划", "建议", "继续", "深入"]
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 5,
+      "name": "vague-input-degradation",
+      "category": "异常路径",
+      "difficulty": "高",
+      "prompt": "帮我总结一下",
+      "expected_output": {
+        "description": "系统应在信息极度不足的情况下仍能生成基础报告框架，但需附带数据不足警告、降低质量评分、并引导用户补充任务名称、时间、关键事件等核心信息"
+      },
+      "key_elements": [
+        "数据不足警告或提示",
+        "引导用户补充信息的建议",
+        "基础报告结构仍保持完整",
+        "质量评分或置信度标注降低",
+        "未编造不存在的任务细节",
+        "降级处理说明"
+      ],
+      "format_requirements": [
+        "包含数据不足的明确提示",
+        "包含信息补充引导",
+        "Markdown格式",
+        "报告结构精简但完整"
+      ],
+      "assertions": [
+        {
+          "name": "contains_data_warning",
+          "type": "text_inclusion",
+          "expected": ["不足", "信息", "缺少", "补充", "警告", "提示"]
+        },
+        {
+          "name": "contains_guidance",
+          "type": "text_inclusion",
+          "expected": ["建议", "补充", "提供", "描述", "详细"]
+        },
+        {
+          "name": "maintains_basic_structure",
+          "type": "structure_check",
+          "expected": ["#", "##", "总结", "报告"]
+        },
+        {
+          "name": "contains_quality_indicator",
+          "type": "text_inclusion",
+          "expected": ["质量", "置信", "评分", "可靠", "完整度"]
+        },
+        {
+          "name": "no_fabricated_details",
+          "description": "不应编造具体的任务名称、时间或技术细节",
+          "type": "structure_check",
+          "expected": ["总结", "记录"]
+        },
+        {
+          "name": "contains_degradation_notice",
+          "type": "text_inclusion",
+          "expected": ["降级", "有限", "不完整", "基础", "简化"]
+        },
+        {
+          "name": "has_markdown_format",
+          "type": "structure_check",
+          "expected": ["#", "##"]
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 6,
+      "name": "conflicting-parameters",
+      "category": "异常路径",
+      "difficulty": "高",
+      "prompt": "我做了一个小任务大概花了20分钟，请用摘要模式生成报告，但我要求包含完整的10章内容每章至少2000字以上的详细分析，同时整个报告控制在1页以内。另外请用详细模板但是只需要输出各章标题就行不需要内容。",
+      "expected_output": {
+        "description": "系统应识别出多组互相矛盾的要求（摘要模式vs详细10章、1页限制vs每章2000字、详细模板vs只输出标题），给出冲突说明并选择合理的降级策略"
+      },
+      "key_elements": [
+        "识别并说明参数冲突",
+        "摘要模式与详细内容的矛盾说明",
+        "页面限制与字数要求的矛盾说明",
+        "采用合理的降级策略",
+        "仍然生成有价值的输出",
+        "解释最终采用的生成策略"
+      ],
+      "format_requirements": [
+        "包含冲突参数的明确说明",
+        "给出合理的降级选择说明",
+        "Markdown格式",
+        "输出结构合理"
+      ],
+      "assertions": [
+        {
+          "name": "identifies_conflict",
+          "type": "text_inclusion",
+          "expected": ["矛盾", "冲突", "不兼容", "互斥", "无法同时"]
+        },
+        {
+          "name": "mentions_summary_vs_detail",
+          "type": "text_inclusion",
+          "expected": ["摘要", "详细", "简要", "完整"]
+        },
+        {
+          "name": "mentions_page_constraint",
+          "type": "text_inclusion",
+          "expected": ["页", "字数", "篇幅", "长度", "限制"]
+        },
+        {
+          "name": "provides_resolution",
+          "type": "text_inclusion",
+          "expected": ["采用", "选择", "建议", "策略", "方案", "降级"]
+        },
+        {
+          "name": "still_produces_output",
+          "type": "structure_check",
+          "expected": ["#", "##", "总结", "报告"]
+        },
+        {
+          "name": "explains_strategy",
+          "type": "text_inclusion",
+          "expected": ["因此", "考虑", "综合", "平衡", "优先"]
+        },
+        {
+          "name": "has_basic_report",
+          "type": "structure_check",
+          "expected": ["#", "任务"]
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 7,
+      "name": "minimal-task-boundary",
+      "category": "异常路径",
+      "difficulty": "中等",
+      "prompt": "我刚给项目README加了一行注释，改了一个错别字，花了大概5分钟，没遇到什么问题也没什么特别的决策。帮我记录一下。",
+      "expected_output": {
+        "description": "系统应生成一份简洁的最小化报告，忠实反映这是一个极简任务，不过度发挥或编造不存在的决策和问题"
+      },
+      "key_elements": [
+        "任务描述：README注释修改/错别字修正",
+        "时间记录：约5分钟",
+        "明确标注无重大决策",
+        "明确标注无显著问题",
+        "报告简洁不臃肿",
+        "不编造额外的技术挑战或复杂决策"
+      ],
+      "format_requirements": [
+        "报告篇幅简短适当",
+        "Markdown格式",
+        "不包含空洞的分析章节",
+        "语言简洁直接"
+      ],
+      "assertions": [
+        {
+          "name": "contains_task_description",
+          "type": "text_inclusion",
+          "expected": ["README", "注释", "错别字"]
+        },
+        {
+          "name": "contains_time_record",
+          "type": "text_inclusion",
+          "expected": ["5分钟", "五分钟", "时间"]
+        },
+        {
+          "name": "acknowledges_simplicity",
+          "type": "text_inclusion",
+          "expected": ["简单", "简短", "快速", "小型", "微小"]
+        },
+        {
+          "name": "no_fabricated_decisions",
+          "type": "text_inclusion",
+          "expected": ["无", "没有", "不涉及", "简单"]
+        },
+        {
+          "name": "no_fabricated_problems",
+          "type": "text_inclusion",
+          "expected": ["无", "没有", "顺利", "未遇到"]
+        },
+        {
+          "name": "concise_output",
+          "description": "报告应简洁，不应有大量空洞分析",
+          "type": "structure_check",
+          "expected": ["#", "记录", "总结"]
+        },
+        {
+          "name": "has_markdown_format",
+          "type": "structure_check",
+          "expected": ["#", "##"]
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 8,
+      "name": "large-scale-migration-project",
+      "category": "大型项目",
+      "difficulty": "极高",
+      "prompt": "我们刚完成了一个历时3个月的微服务架构迁移项目，从单体Spring Boot应用迁移到K8s+Istio微服务架构。整个项目分三个阶段：第一阶段（前2周）做需求分析和架构设计，产出了架构蓝图和迁移方案；第二阶段（中间6周）是核心服务拆分，3个团队共12人并行开发，拆出了用户服务、订单服务、支付服务、商品服务4个核心微服务；第三阶段（最后4周）做数据迁移和灰度发布。中间经历了一次重大方案调整——原本计划用Spring Cloud全家桶，但在第3周发现服务网格方案更适合我们的规模，果断切换到了Istio。项目过程中处理了大量遗留技术债务，包括数据库连接池泄漏、未标准化的API接口、缺失的单元测试等。共进行了3次架构评审会，邀请了外部专家参与。最终项目按时交付，但预算超出了15%，主要是因为方案切换和额外的安全审计费用。部署后系统性能提升了40%，P99延迟从800ms降到了200ms。",
+      "expected_output": {
+        "description": "应生成一份全面深入的大型项目复盘报告，涵盖三阶段完整时间线、多团队协作分析、重大架构决策记录、技术债务处理、预算偏差分析和性能提升量化指标"
+      },
+      "key_elements": [
+        "项目周期：3个月",
+        "三阶段划分及各阶段产出",
+        "团队规模：3个团队12人",
+        "4个核心微服务拆分",
+        "重大决策：Spring Cloud→K8s+Istio切换",
+        "技术债务清单及处理",
+        "3次架构评审",
+        "预算超出15%及原因分析",
+        "性能提升：P99从800ms→200ms"
+      ],
+      "format_requirements": [
+        "包含完整的多阶段时间线表格",
+        "包含团队协作分析",
+        "包含架构决策记录和对比分析",
+        "包含量化的性能指标对比表",
+        "使用Markdown格式",
+        "包含至少3个数据表格"
+      ],
+      "assertions": [
+        {
+          "name": "contains_project_duration",
+          "type": "text_inclusion",
+          "expected": ["3个月", "三个月", "12周"]
+        },
+        {
+          "name": "contains_phase_breakdown",
+          "type": "text_inclusion",
+          "expected": ["阶段", "Phase", "需求分析", "服务拆分", "灰度发布"]
+        },
+        {
+          "name": "contains_team_info",
+          "type": "text_inclusion",
+          "expected": ["12人", "3个团队", "并行"]
+        },
+        {
+          "name": "contains_architecture_decision",
+          "type": "text_inclusion",
+          "expected": ["Spring Cloud", "Istio", "K8s", "切换", "决策"]
+        },
+        {
+          "name": "contains_tech_debt",
+          "type": "text_inclusion",
+          "expected": ["技术债", "连接池", "API", "单元测试"]
+        },
+        {
+          "name": "contains_budget_analysis",
+          "type": "text_inclusion",
+          "expected": ["预算", "15%", "超出", "成本"]
+        },
+        {
+          "name": "contains_performance_metrics",
+          "type": "text_inclusion",
+          "expected": ["P99", "800ms", "200ms", "性能", "40%"]
+        },
+        {
+          "name": "has_multiple_tables",
+          "type": "structure_check",
+          "expected": ["|", "---"]
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 9,
+      "name": "security-incident-response",
+      "category": "安全事件",
+      "difficulty": "极高",
+      "prompt": "上周我们经历了一次严重的安全事件——用户数据泄露。事情经过是这样的：周一凌晨2点安全监控系统报警，发现有异常的数据外传流量，约500MB数据被传输到一个境外IP。我们立即成立了4部门应急小组（安全团队、运维团队、法务部门、公关部门），开始排查。经过8小时的溯源分析，发现是一个第三方数据分析SDK存在后门，这个SDK是3个月前引入的，一直在静默收集用户手机号和邮箱信息。我们紧急下线了所有包含该SDK的服务（影响了3个业务线），同时启动了用户通知流程和监管报告。法务评估后确认需要在72小时内向网信办报告，公关团队在24小时内发布了用户通知。之后我们进行了为期2周的全面安全审计，更换了所有第三方SDK的审核流程，增加了SAST/DAST扫描。整个事件影响了约5万用户数据，直接经济损失约80万元，品牌信任度调研下降了12个百分点。",
+      "expected_output": {
+        "description": "应生成一份专业的安全事件Postmortem报告，涵盖完整事件时间线、根因分析、影响评估、合规应对、多部门协作分析和系统性整改措施"
+      },
+      "key_elements": [
+        "事件发现：凌晨2点监控报警",
+        "异常数据外传500MB至境外IP",
+        "根因：第三方SDK后门",
+        "4部门应急小组协作",
+        "影响范围：5万用户数据",
+        "合规应对：72小时内向网信办报告",
+        "整改措施：安全审计、SDK审核流程更新、SAST/DAST",
+        "经济损失：80万元",
+        "品牌影响：信任度下降12%"
+      ],
+      "format_requirements": [
+        "包含详细事件时间线表格",
+        "包含根因分析",
+        "包含合规要求说明",
+        "包含多部门协作分析",
+        "包含整改措施清单",
+        "使用Markdown格式",
+        "语言专业严谨符合安全事件报告规范"
+      ],
+      "assertions": [
+        {
+          "name": "contains_timeline",
+          "type": "text_inclusion",
+          "expected": ["凌晨", "2点", "时间线", "发现"]
+        },
+        {
+          "name": "contains_root_cause",
+          "type": "text_inclusion",
+          "expected": ["SDK", "后门", "第三方", "根因", "根本原因"]
+        },
+        {
+          "name": "contains_impact_assessment",
+          "type": "text_inclusion",
+          "expected": ["5万", "用户", "数据", "影响"]
+        },
+        {
+          "name": "contains_compliance",
+          "type": "text_inclusion",
+          "expected": ["网信办", "72小时", "合规", "监管", "报告"]
+        },
+        {
+          "name": "contains_multi_dept_coordination",
+          "type": "text_inclusion",
+          "expected": ["安全", "运维", "法务", "公关", "部门"]
+        },
+        {
+          "name": "contains_remediation",
+          "type": "text_inclusion",
+          "expected": ["审计", "SAST", "DAST", "整改", "加固"]
+        },
+        {
+          "name": "contains_financial_impact",
+          "type": "text_inclusion",
+          "expected": ["80万", "损失", "成本", "经济"]
+        },
+        {
+          "name": "has_timeline_table",
+          "type": "structure_check",
+          "expected": ["|", "---", "时间"]
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 10,
+      "name": "database-poc-comparison",
+      "category": "技术研究",
+      "difficulty": "较高",
+      "prompt": "我们花了2周时间对三个数据库方案做了POC对比测试，最终要为我们的电商订单系统选一个主数据库。测试了PostgreSQL 16、MongoDB 7.0和TiDB 7.5三个方案。在写入性能测试中，PostgreSQL达到了12万TPS，MongoDB是8万TPS，TiDB是6万TPS；查询延迟方面P99分别是15ms、25ms和35ms；水平扩展测试中PostgreSQL需要用Citus插件扩展比较麻烦，MongoDB原生分片很方便，TiDB天然分布式最省心。运维复杂度方面PostgreSQL最成熟社区资源最多，MongoDB需要处理副本集管理，TiDB监控体系完善但社区相对小。团队有5年PostgreSQL经验但没用过TiDB。最终选择了TiDB，主要原因是：1）兼顾SQL兼容性让迁移成本低；2）水平扩展能力最强适合未来增长；3）虽然单机性能不是最好但分布式场景下综合表现最优。",
+      "expected_output": {
+        "description": "应生成一份结构化的技术选型POC验证报告，包含三方案的多维度对比分析、量化测试数据、决策矩阵和最终选型理由"
+      },
+      "key_elements": [
+        "三个方案：PostgreSQL/MongoDB/TiDB",
+        "写入性能对比数据",
+        "查询延迟P99对比",
+        "水平扩展能力对比",
+        "运维复杂度对比",
+        "团队经验因素",
+        "最终选择TiDB及三点理由",
+        "决策矩阵或对比表格"
+      ],
+      "format_requirements": [
+        "包含多维度对比表格（性能/扩展/运维）",
+        "包含决策分析",
+        "使用Markdown格式",
+        "数据准确呈现",
+        "包含至少2个对比表格"
+      ],
+      "assertions": [
+        {
+          "name": "contains_all_three_options",
+          "type": "text_inclusion",
+          "expected": ["PostgreSQL", "MongoDB", "TiDB"]
+        },
+        {
+          "name": "contains_write_performance",
+          "type": "text_inclusion",
+          "expected": ["TPS", "写入", "性能", "12万", "8万", "6万"]
+        },
+        {
+          "name": "contains_latency_comparison",
+          "type": "text_inclusion",
+          "expected": ["P99", "延迟", "15ms", "25ms", "35ms"]
+        },
+        {
+          "name": "contains_scaling_analysis",
+          "type": "text_inclusion",
+          "expected": ["扩展", "分布式", "分片", "Citus"]
+        },
+        {
+          "name": "contains_final_decision",
+          "type": "text_inclusion",
+          "expected": ["TiDB", "选择", "决策", "最终"]
+        },
+        {
+          "name": "contains_decision_reasoning",
+          "type": "text_inclusion",
+          "expected": ["SQL兼容", "迁移", "扩展", "理由", "原因"]
+        },
+        {
+          "name": "has_comparison_tables",
+          "type": "structure_check",
+          "expected": ["|", "---", "PostgreSQL"]
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 11,
+      "name": "bilingual-mixed-input",
+      "category": "国际化",
+      "difficulty": "较高",
+      "prompt": "我们team刚完成了一个cross-platform的mobile app MVP开发，用的是React Native加TypeScript的tech stack。整个project timeline是6周，前2周做architecture design和component library搭建，中间3周做core feature开发包括user authentication、payment integration和push notification，最后1周做QA testing和bug fixing。主要的blocker是iOS和Android的native module bridge兼容性问题，我们的camera module在Android上crash rate特别高，debug了整整两天才发现是memory leak导致的，最后通过implementing一个custom garbage collection策略fix了。Performance benchmark方面基本达到了target KPI，首屏加载时间FCP小于2秒，crash rate控制在0.1%以下，user retention D1达到了45%。团队一共5个developer，2个senior负责architecture，3个junior负责feature implementation。Sprint velocity从第一周的15 story points提升到最后一周的28 story points。请帮我做一个完整的execution summary。",
+      "expected_output": {
+        "description": "应生成一份完整的项目执行总结报告，正确处理中英混合术语，保留专业技术术语不误译，输出语言保持一致性"
+      },
+      "key_elements": [
+        "技术栈：React Native + TypeScript",
+        "项目周期：6周三阶段",
+        "核心功能：authentication/payment/notification",
+        "主要问题：native bridge兼容性/memory leak",
+        "性能指标：FCP<2s、crash rate<0.1%、D1 retention 45%",
+        "团队：5人（2 senior + 3 junior）",
+        "Sprint velocity提升：15→28 story points"
+      ],
+      "format_requirements": [
+        "技术术语保留英文原文",
+        "输出语言风格一致",
+        "使用Markdown格式",
+        "包含性能指标对比表格",
+        "专业术语不误译"
+      ],
+      "assertions": [
+        {
+          "name": "preserves_tech_terms",
+          "type": "text_inclusion",
+          "expected": ["React Native", "TypeScript", "MVP"]
+        },
+        {
+          "name": "contains_timeline",
+          "type": "text_inclusion",
+          "expected": ["6周", "阶段", "时间"]
+        },
+        {
+          "name": "contains_blocker_analysis",
+          "type": "text_inclusion",
+          "expected": ["native", "bridge", "兼容", "memory leak", "crash"]
+        },
+        {
+          "name": "contains_performance_kpi",
+          "type": "text_inclusion",
+          "expected": ["FCP", "2秒", "crash rate", "0.1%"]
+        },
+        {
+          "name": "contains_team_structure",
+          "type": "text_inclusion",
+          "expected": ["5", "senior", "junior", "团队"]
+        },
+        {
+          "name": "contains_velocity_improvement",
+          "type": "text_inclusion",
+          "expected": ["story point", "15", "28", "velocity", "提升"]
+        },
+        {
+          "name": "has_consistent_language",
+          "description": "输出语言风格应保持一致",
+          "type": "structure_check",
+          "expected": ["#", "##", "总结"]
+        }
+      ],
+      "files": []
+    }
+  ]
+}
