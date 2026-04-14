@@ -1,6 +1,6 @@
 ---
 version: "1.0"
-updated: "2026-04-09"
+updated: "2026-04-15"
 stage: production
 skill_version: "v1.0+"
 maintainer: "Task Execution Summary Generator Team"
@@ -8,7 +8,7 @@ maintainer: "Task Execution Summary Generator Team"
 
 # 错误码定义文档 (Error Codes Reference)
 
-本文档定义了"任务执行总结报告生成器"技能的完整错误码体系，包括错误分类、详细定义、处理策略和降级机制。
+本文档定义任务执行总结报告生成器的错误码体系，包含15个错误码（E001-E005, E010-E012, E021-E022, E031-E032, E041, E051）的分类、定义、处理策略和降级机制。
 
 ---
 
@@ -44,68 +44,26 @@ maintainer: "Task Execution Summary Generator Team"
 
 ### 1.1 错误处理设计理念
 
-本技能的错误处理体系遵循以下核心原则：
-
-**分层防御 (Defense in Depth)**
-- 输入层：参数验证，拦截非法请求
-- 数据层：数据源可用性检查，确保信息可获取
-- 分析层：分析引擎异常捕获，保证计算稳定性
-- 生成层：报告生成容错，支持部分成功输出
-
-**优雅降级 (Graceful Degradation)**
-- 非致命错误不中断执行流程
-- Warning 级别错误允许继续运行并标注影响
-- 最终报告质量评分反映降级程度
-- 用户始终获得有价值的输出（即使不完美）
-
-**透明告知 (Transparent Communication)**
-- 所有错误都有明确的错误码和消息
-- 响应中包含恢复建议和预防措施
-- 日志记录完整上下文便于排查
-- 降级信息在报告中清晰标注
-
-**可观测性 (Observability)**
-- 错误发生时自动记录完整堆栈和上下文
-- 支持错误统计和趋势分析
-- 提供质量评分量化报告可信度
-- 关键节点有明确的健康检查指标
+核心原则：
+- **分层防御**：输入验证 → 数据检查 → 分析容错 → 生成降级
+- **优雅降级**：Warning级别继续执行，质量评分反映降级程度
+- **透明告知**：明确错误码、恢复建议、完整日志
+- **可观测性**：质量评分量化可信度，关键节点健康检查
 
 ### 1.2 错误码命名规则
 
-```
-格式: E + 类别编号(1位) + 序号(2位)
+格式: `E + 类别编号(1位) + 序号(2位)`，如 E001, E010
 
-示例: E001, E010, E041
-```
-
-**命名规则详解**：
-
-| 组成部分 | 说明 | 取值范围 |
-|---------|------|---------|
-| **前缀 E** | 固定前缀，表示 Error | E |
-| **类别编号** | 错误所属大类 | 0-5 |
-| **序号** | 同类错误的顺序号 | 01-99 |
-
-**类别编号分配**：
-
-| 编号 | 类别 | 说明 |
-|------|------|------|
-| 0 | 参数验证 | 输入参数相关错误 |
-| 1 | 数据源 | 数据获取相关错误 |
-| 2 | 分析引擎 | 分析过程相关错误 |
-| 3 | 报告生成 | 生成输出相关错误 |
-| 4 | 系统资源 | 运行环境资源错误 |
-| 5 | 超时 | 执行时间超限错误 |
-
-**错误码保留规则**：
-- 每个类别预留 5 个错误码空间
-- 新增错误码需在对应类别范围内顺延
-- 已废弃的错误码标记为 `DEPRECATED` 并保留文档
-- 跨类别的通用错误归入最相关的类别
+| 编号 | 类别 | 错误码范围 |
+|------|------|-----------|
+| 0 | 参数验证 | E001-E005 |
+| 1 | 数据源 | E010-E012 |
+| 2 | 分析引擎 | E021-E022 |
+| 3 | 报告生成 | E031-E032 |
+| 4 | 系统资源 | E041 |
+| 5 | 超时 | E051 |
 
 ### 1.3 错误响应通用结构
-
-所有错误响应遵循统一的 JSON 结构：
 
 ```json
 {
@@ -117,43 +75,25 @@ maintainer: "Task Execution Summary Generator Team"
     "category": "parameter_validation",
     "severity": "Error",
     "http_status": 400,
-    "timestamp": "2026-04-09T14:30:00Z",
+    "timestamp": "2026-04-15T14:30:00Z",
     "request_id": "req_abc123xyz",
-    "context": {
-      "missing_parameter": "task_name",
-      "available_parameters": ["detail_level", "output_format"]
-    },
+    "context": {"missing_parameter": "task_name"},
     "recovery": {
       "mode": "terminate",
-      "suggestions": [
-        "请提供 task_name 参数",
-        "参考文档: /docs/api#parameters"
-      ],
-      "documentation_url": "/errors/E001"
+      "suggestions": ["请提供 task_name 参数"]
     }
-  },
-  "metadata": {
-    "version": "1.0.0",
-    "service": "task-execution-summary"
   }
 }
 ```
 
-**字段说明**：
-
-| 字段 | 类型 | 必填 | 说明 |
-|------|------|------|------|
-| success | boolean | ✅ | 是否成功，错误时为 false |
-| error.code | string | ✅ | 错误码，如 "E001" |
-| error.name | string | ✅ | 错误名称，PascalCase |
-| error.message | string | ✅ | 人类可读的错误描述 |
-| error.category | string | ✅ | 错误分类标识 |
-| error.severity | string | ✅ | 严重级别: Critical/Error/Warning |
-| error.http_status | integer | ✅ | 对应的 HTTP 状态码 |
-| error.timestamp | string | ✅ | ISO 8601 格式的时间戳 |
-| error.request_id | string | ✅ | 请求唯一标识，用于追踪 |
-| error.context | object | ⚠️ | 错误发生的上下文信息 |
-| error.recovery | object | ✅ | 恢复建议和模式 |
+| 字段 | 说明 |
+|------|------|
+| success | 是否成功 |
+| error.code | 错误码，如 "E001" |
+| error.name | 错误名称 |
+| error.severity | Critical/Error/Warning |
+| error.http_status | HTTP 状态码 |
+| error.recovery.mode | terminate/degrade/partial/estimate |
 
 ---
 
@@ -161,20 +101,20 @@ maintainer: "Task Execution Summary Generator Team"
 
 | 类别编码 | 类别名称 | 错误码范围 | 严重级别 | 处理策略 | 触发阶段 |
 |---------|---------|-----------|---------|---------|---------|
-| **E0xx** | 参数验证错误 | E001-E010 | Error/Warning | 验证失败时立即返回或降级 | 触发检测 → 信息收集 |
-| **E1xx** | 数据源错误 | E011-E015 | Error/Warning | 数据获取异常时重试或降级 | 信息收集阶段 |
-| **E2xx** | 分析引擎错误 | E021-E025 | Error/Warning | 分析失败时使用默认值或跳过 | 分析处理阶段 |
-| **E3xx** | 报告生成错误 | E031-E035 | Error | 生成失败时返回错误或部分结果 | 报告生成阶段 |
-| **E4xx** | 系统资源错误 | E041-E045 | Critical | 资源不足时终止并告警 | 任意阶段 |
-| **E5xx** | 超时错误 | E051 | Error | 超时时终止或返回部分结果 | 任意阶段 |
+| **E0xx** | 参数验证错误 | E001-E005 | Error | 验证失败立即返回 | 触发检测 → 信息收集 |
+| **E1xx** | 数据源错误 | E010-E012 | Error/Warning | 重试或降级 | 信息收集阶段 |
+| **E2xx** | 分析引擎错误 | E021-E022 | Error/Warning | 使用默认值或跳过 | 分析处理阶段 |
+| **E3xx** | 报告生成错误 | E031-E032 | Error | 返回错误或部分结果 | 报告生成阶段 |
+| **E4xx** | 系统资源错误 | E041 | Critical | 终止并告警 | 任意阶段 |
+| **E5xx** | 超时错误 | E051 | Error | 终止或返回部分结果 | 任意阶段 |
 
 **严重级别说明**：
 
 | 级别 | 图标 | 定义 | 对执行的影响 |
 |------|------|------|-------------|
-| **Critical** | 🔴 | 系统级故障，无法继续运行 | 立即终止，不生成任何输出 |
-| **Error** | 🟠 | 功能性错误，当前操作无法完成 | 终止当前步骤，可能返回部分结果 |
-| **Warning** | 🟡 | 非致命问题，可以继续但质量受损 | 标记警告，继续执行，最终报告标注 |
+| **Critical** | 🔴 | 系统级故障 | 立即终止，不生成输出 |
+| **Error** | 🟠 | 功能性错误 | 终止当前步骤，可能返回部分结果 |
+| **Warning** | 🟡 | 非致命问题 | 标记警告，继续执行 |
 
 ---
 
@@ -190,67 +130,23 @@ maintainer: "Task Execution Summary Generator Team"
 | **名称** | MissingRequiredParameter |
 | **类别** | parameter_validation |
 | **严重程度** | 🟠 Error |
-| **HTTP 状态码** | 400 Bad Request |
+| **HTTP 状态码** | 400 |
 | **恢复模式** | terminate |
 
-**触发条件**:
-当调用技能时缺少一个或多个必填参数时触发。必填参数包括但不限于：
-- `task_name` 或等效的任务标识
-- 对话历史引用（隐式或显式）
-- 输出路径（如果需要保存文件）
+**触发条件**：缺少必填参数（如 `task_name`、对话历史引用、输出路径）
 
-**错误消息模板**:
+**错误消息模板**：
 ```
 缺少必填参数: {parameter_name}
-
-必需参数列表:
-- {required_param_1}: {description_1}
-- {required_param_2}: {description_2}
-
-当前已提供参数: {provided_params_list}
-
-请补充缺失的必填参数后重试。
+必需参数: {required_params}
+当前已提供: {provided_params}
 ```
 
-**示例场景**:
-> 用户直接发送 `/summary` 命令但没有指定要总结的任务，且当前对话中没有足够的任务执行上下文。
->
-> **请求**: `{ "action": "generate_summary" }`
->
-> **响应**:
-> ```json
-> {
->   "success": false,
->   "error": {
->     "code": "E001",
->     "name": "MissingRequiredParameter",
->     "message": "缺少必填参数: task_context",
->     "context": {
->       "missing_parameter": "task_context",
->       "reason": "无法从当前对话中识别出待总结的任务"
->     },
->     "recovery": {
->       "mode": "terminate",
->       "suggestions": [
->         "请明确描述要总结的任务内容",
->         "提供任务的开始和结束时间范围",
->         "或者先执行一个任务，然后再请求总结"
->       ]
->     }
->   }
-> }
-> ```
+**恢复建议**：检查API文档、补充参数值、交互式引导
 
-**恢复建议**:
-1. 检查 API 文档确认所有必填参数
-2. 在请求中补充缺失的参数值
-3. 如果是交互式场景，引导用户提供必要信息
+**预防措施**：SDK参数校验、清晰文档、智能推断
 
-**预防措施**:
-- 在 SDK 和 CLI 工具中实现参数校验
-- 提供清晰的参数文档和示例
-- 实现智能推断：尝试从对话上下文中自动提取缺失信息
-- 对于可选但有默认值的参数，在文档中明确标注默认行为
+> 示例见 [examples-v2.md](examples-v2.md)
 
 ---
 
@@ -262,69 +158,23 @@ maintainer: "Task Execution Summary Generator Team"
 | **名称** | InvalidParameterType |
 | **类别** | parameter_validation |
 | **严重程度** | 🟠 Error |
-| **HTTP 状态码** | 400 Bad Request |
+| **HTTP 状态码** | 400 |
 | **恢复模式** | terminate |
 
-**触发条件**:
-当提供的参数类型与预期不符时触发，常见情况包括：
-- `detail_level` 应为字符串 ("summary"/"standard"/"detailed") 但传入了数字
-- `chapters` 应为数组但传入了字符串
-- `output_format` 应为特定枚举值但传入了自定义字符串
-- 时间参数格式错误（非 ISO 8601 格式）
+**触发条件**：参数类型不符（如 `detail_level` 应为字符串但传入数字）
 
-**错误消息模板**:
+**错误消息模板**：
 ```
 参数类型错误: {parameter_name}
-
 期望类型: {expected_type}
 实际类型: {actual_type}
-实际值: {actual_value}
-
-有效的值示例: {valid_examples}
-
-请修正参数类型后重试。
 ```
 
-**示例场景**:
-> 用户在请求中将 `detail_level` 设置为数字 `2` 而不是字符串 `"detailed"`。
->
-> **请求**: `{ "detail_level": 2 }`
->
-> **响应**:
-> ```json
-> {
->   "success": false,
->   "error": {
->     "code": "E002",
->     "name": "InvalidParameterType",
->     "message": "参数类型错误: detail_level",
->     "context": {
->       "parameter": "detail_level",
->       "expected": "string (enum: 'summary', 'standard', 'detailed')",
->       "actual": "integer",
->       "actual_value": 2
->     },
->     "recovery": {
->       "mode": "terminate",
->       "suggestions": [
->         "使用字符串值: \"summary\", \"standard\", 或 \"detailed\"",
->         "参考: /docs/api#detail-level"
->       ]
->     }
->   }
-> }
-> ```
+**恢复建议**：对照文档检查类型、使用正确数据类型、利用SDK类型提示
 
-**恢复建议**:
-1. 对照文档检查参数的预期类型
-2. 使用正确的数据类型重新提交请求
-3. 利用 SDK 的类型提示功能避免此类错误
+**预防措施**：强类型模型、OpenAPI文档、客户端类型检查
 
-**预防措施**:
-- 使用强类型的请求模型（如 TypeScript interface、Pydantic model）
-- 提供 OpenAPI/Swagger 文档供自动校验
-- 在客户端 SDK 中内置类型检查
-- 对边界情况进行清晰的错误提示
+> 示例见 [examples-v2.md](examples-v2.md)
 
 ---
 
@@ -336,73 +186,23 @@ maintainer: "Task Execution Summary Generator Team"
 | **名称** | ParameterValueOutOfRange |
 | **类别** | parameter_validation |
 | **严重程度** | 🟠 Error |
-| **HTTP 状态码** | 400 Bad Request |
+| **HTTP 状态码** | 400 |
 | **恢复模式** | terminate |
 
-**触发条件**:
-当参数值超出允许的范围时触发，包括：
-- 数值型参数超过最大/最小限制（如 `max_issues` > 100）
-- 字符串长度超出限制（如 `task_name` > 200 字符）
-- 枚举值不在允许集合中
-- 日期范围不合理（结束时间早于开始时间）
-- 章节选择包含无效的章节编号
+**触发条件**：参数值超出范围（数值超限、字符串过长、无效枚举值）
 
-**错误消息模板**:
+**错误消息模板**：
 ```
 参数值超出范围: {parameter_name}
-
 当前值: {current_value}
 有效范围: {valid_range}
-约束说明: {constraint_description}
-
-请将参数调整到有效范围内后重试。
 ```
 
-**示例场景**:
-> 用户请求生成报告时指定了无效的章节组合，包含了不存在的第11章。
->
-> **请求**: `{ "chapters": [1, 2, 3, 11] }`
->
-> **响应**:
-> ```json
-> {
->   "success": false,
->   "error": {
->     "code": "E003",
->     "name": "ParameterValueOutOfRange",
->     "message": "参数值超出范围: chapters",
->     "context": {
->       "parameter": "chapters",
->       "invalid_values": [11],
->       "valid_range": "1-10",
->       "available_chapters": [
->         "1: 执行概览",
->         "2: 任务背景与目标",
->         "...",
->         "10: 改进建议与行动计划"
->       ]
->     },
->     "recovery": {
->       "mode": "terminate",
->       "suggestions": [
->         "有效章节范围为 1-10",
->         "使用 chapter_names 参数按名称选择"
->       ]
->     }
->   }
-> }
-> ```
+**恢复建议**：查看文档了解范围、调整参数值
 
-**恢复建议**:
-1. 查看文档了解参数的有效取值范围
-2. 将参数值调整到合法范围内
-3. 如需扩展范围，联系系统管理员评估可行性
+**预防措施**：文档标注约束、enum类型限制、客户端预校验
 
-**预防措施**:
-- 在文档中明确标注每个参数的取值范围和约束
-- 使用 enum 类型限制枚举值的选择
-- 实现客户端预校验，在提交前拦截无效值
-- 对复杂约束提供在线验证工具
+> 示例见 [examples-v2.md](examples-v2.md)
 
 ---
 
@@ -414,71 +214,23 @@ maintainer: "Task Execution Summary Generator Team"
 | **名称** | ConflictingParameters |
 | **类别** | parameter_validation |
 | **严重程度** | 🟠 Error |
-| **HTTP 状态码** | 400 Bad Request |
+| **HTTP 状态码** | 400 |
 | **恢复模式** | terminate |
 
-**触发条件**:
-当多个参数之间存在逻辑冲突时触发，典型场景包括：
-- 同时指定了 `detail_level="summary"` 和 `chapters=[1,2,3,4,5,6,7,8,9,10]`（摘要版不应包含全部章节）
-- 同时指定了 `include_chapters` 和 `exclude_chapters` 且存在重叠
-- `output_path` 指定了 `.pdf` 但 `output_format` 为 `"markdown"`
-- `time_range` 与具体的时间点参数冲突
+**触发条件**：参数间逻辑冲突（如 `detail_level="summary"` 与 `chapters=[1..10]` 矛盾）
 
-**错误消息模板**:
+**错误消息模板**：
 ```
-参数冲突: {parameter_1} 与 {parameter_2} 存在矛盾
-
-{parameter_1} = {value_1}: {meaning_1}
-{parameter_2} = {value_2}: {meaning_2}
-
+参数冲突: {parameter_1} 与 {parameter_2}
 冲突原因: {conflict_explanation}
-
-请移除或修改其中一个参数以消除冲突。
+解决方案: {resolution_options}
 ```
 
-**示例场景**:
-> 用户同时要求摘要版输出但又指定了包含所有10个章节。
->
-> **请求**: `{ "detail_level": "summary", "chapters": [1,2,3,4,5,6,7,8,9,10] }`
->
-> **响应**:
-> ```json
-> {
->   "success": false,
->   "error": {
->     "code": "E004",
->     "name": "ConflictingParameters",
->     "message": "参数冲突: detail_level 与 chapters 存在矛盾",
->     "context": {
->       "param_1": "detail_level = 'summary' (仅包含第1章和第10章摘要)",
->       "param_2": "chapters = [1..10] (包含全部10章)",
->       "resolution_options": [
->         "移除 chapters 参数，使用 summary 默认章节",
->         "将 detail_level 改为 'standard' 或 'detailed'",
->         "将 chapters 改为 [1, 10]"
->       ]
->     },
->     "recovery": {
->       "mode": "terminate",
->       "suggestions": [
->         "选择方案A: 移除 chapters，使用 summary 默认配置",
->         "选择方案B: 将 detail_level 改为 'detailed'"
->       ]
->     }
->   }
-> }
-> ```
+**恢复建议**：理解参数关系、选择一致的组合
 
-**恢复建议**:
-1. 理解每个参数的含义和它们之间的相互关系
-2. 选择一组一致的非冲突参数组合
-3. 参考文档中的参数兼容性矩阵
+**预防措施**：参数兼容性表、SDK冲突检测
 
-**预防措施**:
-- 提供参数兼容性表格，明确哪些参数不能同时使用
-- 在 SDK 中实现参数冲突检测
-- 当检测到冲突时，提供具体的解决方案选项
-- 使用 builder 模式或 fluent API 引导用户正确配置
+> 示例见 [examples-v2.md](examples-v2.md)
 
 ---
 
@@ -490,78 +242,23 @@ maintainer: "Task Execution Summary Generator Team"
 | **名称** | InvalidChapterCombination |
 | **类别** | parameter_validation |
 | **严重程度** | 🟠 Error |
-| **HTTP 状态码** | 400 Bad Request |
+| **HTTP 状态码** | 400 |
 | **恢复模式** | terminate |
 
-**触发条件**:
-当选择的章节组合违反依赖关系或完整性约束时触发：
-- 缺少基础章节（如只有第9章经验总结却没有第3章执行过程）
-- 章节间存在前置依赖未满足（如选了第8章多维度分析却没选第2章目标）
-- 仅选择了附录而没有正文章节
-- 选择的章节数量为0（空数组）
+**触发条件**：章节组合违反依赖关系（缺少前置章节、仅选附录、空数组）
 
-**错误消息模板**:
+**错误消息模板**：
 ```
 无效的章节组合: {chapter_list}
-
-问题: {dependency_issue_description}
-
-依赖关系说明:
-- {dependent_chapter} 依赖于 {prerequisite_chapter}
-- 原因: {reason}
-
-建议的完整组合:
-- 方案A: {recommended_set_a}
-- 方案B: {recommended_set_b}
+依赖关系: {dependencies}
+建议组合: {recommended_sets}
 ```
 
-**示例场景**:
-> 用户只选择了第8章（多维度分析）和第9章（经验总结），缺少了提供原始数据的第2-7章。
->
-> **请求**: `{ "chapters": [8, 9] }`
->
-> **响应**:
-> ```json
-> {
->   "success": false,
->   "error": {
->     "code": "E005",
->     "name": "InvalidChapterCombination",
->     "message": "无效的章节组合: 第8章、第9章",
->     "context": {
->       "selected_chapters": [8, 9],
->       "issue": "第8章(多维度分析)需要第2-7章的数据作为输入",
->       "chapter_dependencies": [
->         {"chapter": 8, "requires": [2, 3, 4, 5, 6], "reason": "需要原始执行数据"},
->         {"chapter": 9, "requires": [3, 5], "reason": "需要问题和决策记录"}
->       ],
->       "recommendations": [
->         {"set": [2, 3, 4, 5, 6, 8, 9], "label": "最小可行集"},
->         {"set": [1, 2, 3, 4, 5, 6, 8, 9], "label": "推荐集（含概览）"},
->         {"set": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], "label": "完整集"}
->       ]
->     },
->     "recovery": {
->       "mode": "terminate",
->       "suggestions": [
->         "添加第2-6章作为数据分析的基础输入",
->         "或使用 detail_level='standard' 获取标准章节组合"
->       ]
->     }
->   }
-> }
-> ```
+**恢复建议**：了解章节依赖、补充前置章节、使用 `detail_level` 预设
 
-**恢复建议**:
-1. 了解章节之间的依赖关系图
-2. 补充被依赖的前置章节
-3. 或使用预设的 `detail_level` 快速选择合理的章节组合
+**预防措施**：章节依赖图、实时校验、智能推荐
 
-**预防措施**:
-- 在文档中提供章节依赖关系图
-- 实现 interactive 模式下的实时校验和提示
-- 提供"智能推荐"功能，根据用户意图推荐最优章节组合
-- 对常见组合提供快捷选项（如"仅复盘"、"仅方法论"等）
+> 示例见 [examples-v2.md](examples-v2.md)
 
 ---
 
@@ -573,106 +270,35 @@ maintainer: "Task Execution Summary Generator Team"
 | **名称** | InsufficientDataWarning |
 | **类别** | data_source |
 | **严重程度** | 🟡 Warning |
-| **HTTP 状态码** | 206 Partial Content |
+| **HTTP 状态码** | 206 |
 | **恢复模式** | degrade |
 
-**触发条件**:
-当任务执行过程中发现某些关键信息缺失或不充分，但不足以阻止报告生成时触发。这是**降级继续的核心机制**：
+**触发条件**：关键信息缺失但不阻止报告生成（对话过短、缺少决策记录、时间戳不完整）
 
-- 对话历史过短（< 5轮交互），信息密度不足
-- 缺少关键阶段的信息（如有执行无决策记录）
-- 时间戳信息不完整，无法精确重建时间线
-- 问题解决过程描述模糊，缺乏细节
-- 资源使用信息未被提及
-- 团队协作信息完全缺失（对于多人任务）
-
-**错误消息模板**:
+**错误消息模板**：
 ```
 ⚠️ 数据不充分警告
-
-缺失信息类型: {missing_data_types}
-影响程度: {impact_level} (轻微/中等/显著)
+缺失信息: {missing_data_types}
+影响程度: {impact_level}
 受影响章节: {affected_chapters}
-
-系统将以降级模式继续生成报告:
-- 受影响的章节将使用推断数据或标注[数据不足]
-- 报告质量评分将相应降低
-- 建议在获得更完整数据后重新生成
-
-缺失详情:
-{missing_details_by_category}
+质量评分扣减: {penalty}
 ```
 
-**示例场景**:
-> 用户的任务对话只有8轮，其中大部分是简短的指令确认，缺少详细的决策讨论和问题描述。
->
-> **请求**: （正常发起总结请求）
->
-> **响应** (带警告的成功响应):
-> ```json
-> {
->   "success": true,
->   "warning": {
->     "code": "E010",
->     "name": "InsufficientDataWarning",
->     "message": "数据不充分：决策记录和时间细节有限",
->     "severity": "Warning",
->     "impact": {
->       "quality_score_penalty": -15,
->       "affected_chapters": [4, 8],
->       "degraded_sections": {
->         "4": "关键决策分析 - 将基于有限信息推断",
->         "8": "时间效能分析 - 时间粒度较粗"
->       }
->     },
->     "details": {
-       "conversation_rounds": 8,
-       "minimum_recommended": 15,
-       "missing_elements": [
-         "决策 rationale 详细说明",
-         "问题排查的中间步骤",
-         "精确的时间消耗数据"
-       ]
-     },
-     "recovery": {
-       "mode": "degrade",
-       "suggestions": [
-         "报告已生成但第四章和第八章信息有限",
-         "如需更详细的分析，请提供更多任务执行的背景信息",
-         "可在报告中手动补充关键决策的详细说明"
-       ]
-     }
-   },
-   "result": {
-     "report_path": "./task-summary-xxx.md",
-     "quality_score": 78,
-     "quality_grade": "B",
-     "degradation_notice": "报告因数据不充分已降级生成，部分章节内容为推断或简化版本"
-   }
- }
-> ```
+**恢复建议**：接受降级结果并手动补充、补充信息后重新生成、使用交互模式
 
-**恢复建议**:
-1. **接受降级结果**：查看生成的报告，在 `[数据不足]` 标注处手动补充信息
-2. **补充信息后重新生成**：提供更多关于任务执行的详细信息后再次请求
-3. **切换到交互模式**：使用交互式生成方式，在过程中逐步补充缺失信息
-4. **导入手动记录**：如果有外部笔记或文档，可以作为附加数据源导入
+**预防措施**：详细对话记录、结构化命令标记关键事件
 
-**预防措施**:
-- 在任务执行过程中保持详细的对话记录（鼓励用户说明思考过程）
-- 使用结构化的命令来标记关键事件（如 `/decision`, `/issue`, `/milestone`）
-- 定期保存中间状态和重要结论
-- 对于重要任务，建议在开始前明确告知需要记录哪些维度的信息
+**quality_score 影响**：
 
-**对 quality_score 的影响**:
+| 缺失信息类型 | 扣分 | 影响章节 |
+|-------------|------|---------|
+| 决策记录 | -10~-20 | 第4章 |
+| 时间信息 | -5~-15 | 第3、8章 |
+| 问题记录 | -10~-20 | 第5章 |
+| 资源信息 | -5~-10 | 第6章 |
+| 协作信息 | 0~-10 | 第7章 |
 
-| 缺失信息类型 | 分数扣减 | 说明 |
-|-------------|---------|------|
-| 决策记录缺失 | -10 至 -20 | 第四章关键决策分析质量下降 |
-| 时间信息不全 | -5 至 -15 | 第三章时间线和第八章时间分析精度降低 |
-| 问题记录模糊 | -10 至 -20 | 第五章问题分析深度不足 |
-| 资源信息缺失 | -5 至 -10 | 第六章资源分析简化 |
-| 协作信息缺失 | -0 至 -10 | 第七章标注为"不适用"（单人任务时不扣分） |
+> 示例见 [examples-v2.md](examples-v2.md)
 
 ---
 
@@ -684,85 +310,22 @@ maintainer: "Task Execution Summary Generator Team"
 | **名称** | ConversationHistoryUnavailable |
 | **类别** | data_source |
 | **严重程度** | 🟠 Error |
-| **HTTP 状态码** | 503 Service Unavailable |
-| **恢复模式** | partial (支持手动输入替代) |
+| **HTTP 状态码** | 503 |
+| **恢复模式** | partial |
 
-**触发条件**:
-当无法访问对话历史时触发：
-- 对话历史服务不可用或超时
-- 权限不足无法读取对话记录
-- 对话已被删除或过期
-- 会话ID无效或不存在
-- 网络连接问题导致数据拉取失败
+**触发条件**：无法访问对话历史（服务不可用、权限不足、记录过期）
 
-**错误消息模板**:
+**错误消息模板**：
 ```
 对话历史不可用: {reason}
-
-错误原因: {detailed_reason}
-会话ID: {session_id} (如适用)
-
-可选的恢复方案:
-1. 手动提供任务执行的关键信息
-2. 稍后重试（如果是临时性服务问题）
-3. 从本地缓存或导出的记录中恢复
-
-如选择手动输入，请提供以下信息:
-- 任务目标和背景
-- 主要执行步骤
-- 遇到的问题和解决方案
-- 关键决策及其理由
+可选方案: 手动输入 / 稍后重试 / 本地恢复
 ```
 
-**示例场景**:
-> 由于权限变更，系统无法访问用户指定的历史会话记录。
->
-> **请求**: `{ "session_id": "sess_98765" }`
->
-> **响应**:
-> ```json
-> {
->   "success": false,
->   "error": {
->     "code": "E011",
->     "name": "ConversationHistoryUnavailable",
->     "message": "对话历史不可用: 权限不足",
->     "context": {
->       "session_id": "sess_98765",
->       "reason": "ACCESS_DENIED",
->       "retryable": false
->     },
->     "recovery": {
->       "mode": "partial",
-       "suggestions": [
-         "检查会话访问权限是否正确配置",
-         "使用 manual_input 模式手动提供任务信息",
-         "联系管理员确认数据保留策略"
-       ],
-       "alternative_mode": {
-         "type": "manual_input",
-         "description": "切换到手动输入模式，通过表单或对话方式提供任务信息",
-         "required_fields": [
-           "task_name", "objectives", "timeline_summary",
-           "key_decisions", "issues_encountered", "outcomes"
-         ]
-       }
-     }
-   }
- }
-> ```
+**恢复建议**：检查权限、使用手动模式、等待重试
 
-**恢复建议**:
-1. **检查权限**：确认当前身份有权限访问目标会话
-2. **使用手动模式**：切换到手动输入模式，自行填写任务信息
-3. **等待重试**：如果是临时服务问题，等待几分钟后重试
-4. **导出恢复**：如果之前有导出过对话记录，可以从本地文件恢复
+**预防措施**：定期备份、持久化存储、分级权限管理
 
-**预防措施**:
-- 定期备份重要的对话记录
-- 使用持久化的存储方案而非纯内存
-- 实现分级权限管理，避免意外丢失访问权
-- 提供对话导出功能，让用户可以本地存档
+> 示例见 [examples-v2.md](examples-v2.md)
 
 ---
 
@@ -774,81 +337,23 @@ maintainer: "Task Execution Summary Generator Team"
 | **名称** | FileAccessDenied |
 | **类别** | data_source |
 | **严重程度** | 🟠 Error |
-| **HTTP 状态码** | 403 Forbidden |
-| **恢复模式** | partial (更换路径或权限修复后重试) |
+| **HTTP 状态码** | 403 |
+| **恢复模式** | partial |
 
-**触发条件**:
-当无法读写指定的文件时触发：
-- 输出目录没有写入权限
-- 指定的文件路径不存在且无法创建（父目录无权限）
-- 文件被其他进程锁定
-- 磁盘配额已满
-- 安全策略禁止访问该路径（如沙箱限制）
+**触发条件**：文件读写失败（无权限、路径不存在、文件被锁定、磁盘满）
 
-**错误消息模板**:
+**错误消息模板**：
 ```
 文件访问被拒绝: {file_path}
-
-操作类型: {operation} (read/write/create/delete)
-原因: {access_denied_reason}
-
-当前用户: {current_user}
-目标路径权限: {path_permissions}
-磁盘状态: {disk_status}
-
-建议:
-1. 检查文件/目录权限设置
-2. 更换输出路径到有权限的位置
-3. 以更高权限运行（谨慎使用）
-4. 检查磁盘空间是否充足
+操作: {operation} | 原因: {reason}
+备选路径: {alternative_paths}
 ```
 
-**示例场景**:
-> 用户指定将报告输出到系统保护目录 `C:\Windows\` 下。
->
-> **请求**: `{ "output_path": "C:\\Windows\\task-summary.md" }`
->
-> **响应**:
-> ```json
-> {
->   "success": false,
->   "error": {
->     "code": "E012",
->     "name": "FileAccessDenied",
->     "message": "文件访问被拒绝: C:\\Windows\\task-summary.md",
->     "context": {
->       "operation": "create",
->       "path": "C:\\Windows\\task-summary.md",
->       "reason": "SYSTEM_PROTECTED_DIRECTORY",
->       "alternative_paths": [
->         ".\\reports\\task-summary.md",
->         "%USERPROFILE%\\Documents\\task-summary.md",
->         "%TEMP%\\task-summary.md"
-       ]
-     },
->     "recovery": {
->       "mode": "partial",
-       "suggestions": [
-         "使用备选路径: ./reports/task-summary.md",
-         "或指定用户目录下的路径",
-         "检查目标目录的写入权限"
-       ]
-     }
-   }
- }
-> ```
+**恢复建议**：更换路径、修复权限、检查磁盘空间
 
-**恢复建议**:
-1. **更换路径**：使用推荐的备选路径或用户目录下的位置
-2. **修复权限**：对目标目录授予当前用户写入权限
-3. **创建父目录**：确保输出路径的所有父目录都已存在
-4. **检查空间**：确认磁盘有足够的空间（建议至少预留 10MB）
+**预防措施**：路径可写性检查、默认安全路径、临时文件机制
 
-**预防措施**:
-- 在保存前检查目标路径的可写性
-- 默认使用相对路径或用户目录下的安全位置
-- 提供路径建议和自动补全功能
-- 实现临时文件机制，先写到临时位置再移动
+> 示例见 [examples-v2.md](examples-v2.md)
 
 ---
 
@@ -860,67 +365,23 @@ maintainer: "Task Execution Summary Generator Team"
 | **名称** | GoalAnalysisFailed |
 | **类别** | analysis_engine |
 | **严重程度** | 🟠 Error |
-| **HTTP 状态码** | 500 Internal Server Error |
-| **恢复模式** | estimate (使用估算值代替精确分析) |
+| **HTTP 状态码** | 500 |
+| **恢复模式** | estimate |
 
-**触发条件**:
-当目标达成度分析过程出现异常时触发：
-- 无法从对话中提取明确的目标定义
-- 目标描述过于模糊无法量化
-- 缺少验收标准无法判断达成情况
-- 分析算法内部错误
-- 目标在执行过程中发生了重大变更且未记录
+**触发条件**：目标达成度分析异常（无法提取目标、描述模糊、缺少验收标准）
 
-**错误消息模板**:
+**错误消息模板**：
 ```
 目标达成度分析失败: {failure_reason}
-
-原始目标描述: {goal_description}
-问题: {analysis_problem}
-
-影响范围:
-- 第二章: 任务背景与目标 - 目标定义部分将使用原始文本
-- 第八章: 多维度分析 - 目标达成度分析将被跳过或简化
-- 第一章: 执行概览 - 达成率数据将为估算值
-
-系统将继续生成报告，目标分析部分将标注[分析受限]。
+影响章节: 第2章(目标定义)、第8章(达成度分析)
+处理方式: 使用定性描述标注[分析受限]
 ```
 
-**示例场景**:
-> 用户的任务目标是"优化一下代码"，这个描述过于模糊，无法进行量化的达成度分析。
->
-> **响应** (带警告):
-> ```json
-> {
->   "success": true,
->   "warning": {
->     "code": "E021",
->     "name": "GoalAnalysisFailed",
->     "message": "目标达成度分析受限: 目标描述过于定性化",
->     "severity": "Error",
->     "recovery": {
->       "mode": "estimate",
-       "fallback_action": "使用定性描述代替定量分析"
-     }
-   },
-   "result": {
-     "report_generated": true,
-     "affected_sections": ["2.2", "8.1"],
-     "quality_impact": "目标达成度将以文字描述形式呈现，不含数值化指标"
-   }
- }
-> ```
+**恢复建议**：接受定性结果、补充目标描述后重试、事后手动编辑
 
-**恢复建议**:
-1. **接受估算结果**：报告将包含定性的目标分析而非定量指标
-2. **补充目标信息**：如果可能，提供更具体的目标描述和验收标准
-3. **事后编辑**：在生成的报告基础上手动补充目标分析的数值
+**预防措施**：引导SMART目标、结构化模板、记录目标变更
 
-**预防措施**:
-- 在任务开始时引导用户设定 SMART 目标
-- 使用结构化的目标定义模板
-- 在执行过程中定期确认目标是否仍然适用
-- 记录目标的任何变更及其原因
+> 示例见 [examples-v2.md](examples-v2.md)
 
 ---
 
@@ -932,67 +393,23 @@ maintainer: "Task Execution Summary Generator Team"
 | **名称** | TimelineReconstructionFailed |
 | **类别** | analysis_engine |
 | **严重程度** | 🟡 Warning |
-| **HTTP 状态码** | 206 Partial Content |
-| **恢复模式** | degrade (使用粗粒度时间线) |
+| **HTTP 状态码** | 206 |
+| **恢复模式** | degrade |
 
-**触发条件**:
-当无法精确重建任务执行时间线时触发：
-- 对话消息缺少时间戳或时间戳不准确
-- 存在大量的离线操作（未在对话中记录的工作）
-- 时间跨度太大导致精度损失
-- 并行任务交错导致时序混乱
-- 中途切换了工作上下文
+**触发条件**：无法精确重建时间线（缺少时间戳、大量离线操作）
 
-**错误消息模板**:
+**错误消息模板**：
 ```
-⚠️ 时间线重建精度受限: {limitation_reason}
-
-可用时间信息: {available_time_info}
-时间精度: {precision_level} (精确到{granularity})
-
-影响:
-- 第三章: 执行过程详解 - 时间数据为近似值
-- 第八章: 时间效能分析 - 效能指标为估算值
-
-时间线将以{granularity}粒度呈现，具体时刻可能存在偏差。
+⚠️ 时间线重建精度受限: {reason}
+时间精度: {granularity} (约±30%)
+影响: 第3、8章时间数据为估算值
 ```
 
-**示例场景**:
-> 用户的任务跨越了3天，但对话中有大量时间段是没有消息的（用户在离线编码），导致只能根据消息间隔粗略估计耗时。
->
-> **响应** (带警告):
-> ```json
-> {
->   "success": true,
->   "warning": {
->     "code": "E022",
->     "name": "TimelineReconstructionFailed",
->     "message": "时间线重建精度受限: 存在大量离线操作时段",
->     "severity": "Warning",
->     "context": {
-       "total_duration_known": true,
-       "phase_level_timing_available": true,
-       "step_level_timing_available": false,
-       "estimated_precision": "±30%"
-     },
-     "recovery": {
-       "mode": "degrade",
-       "fallback_action": "使用阶段级时间估算，步骤级时间为推测值"
-     }
-   }
- }
-> ```
+**恢复建议**：接受粗粒度时间线、手动校正、整合外部记录
 
-**恢复建议**:
-1. **接受粗粒度时间线**：报告中的时间数据标注为"估算值"
-2. **手动校正**：在报告生成后手动修正已知准确的时间数据
-3. **补充时间记录**：如果有外部的工时记录系统，可以整合进去
+**预防措施**：使用`/timer`记录、定期汇报、时间标记
 
-**预防措施**:
-- 鼓励用户在任务执行过程中使用 `/timer` 或类似工具记录时间
-- 对于长周期任务，定期进行阶段性汇报
-- 使用集成开发环境的活动日志作为辅助数据源
-- 在对话中使用时间标记（如"[耗时约2小时]"）
+> 示例见 [examples-v2.md](examples-v2.md)
 
 ---
 
@@ -1004,79 +421,22 @@ maintainer: "Task Execution Summary Generator Team"
 | **名称** | TemplateNotFound |
 | **类别** | report_generation |
 | **严重程度** | 🟠 Error |
-| **HTTP 状态码** | 404 Not Found |
-| **恢复模式** | terminate (必须使用有效模板) |
+| **HTTP 状态码** | 404 |
+| **恢复模式** | terminate |
 
-**触发条件**:
-当请求的报告模板不存在时触发：
-- 模板名称拼写错误
-- 模板版本不存在
-- 自定义模板已被删除
-- 模板 ID 无效或过期
-- 模板文件损坏无法加载
+**触发条件**：模板不存在（名称拼写错误、版本不存在、模板被删除）
 
-**错误消息模板**:
+**错误消息模板**：
 ```
 报告模板不存在: {template_identifier}
-
-查找位置: {search_locations}
-已注册模板列表: {available_templates}
-
-可能的纠正:
-1. 检查模板名称拼写
-2. 使用 --list-templates 查看可用模板
-3. 使用默认模板 (default) 重试
-4. 确认自定义模板是否仍存在
+可用模板: {available_templates}
 ```
 
-**示例场景**:
-> 用户指定了一个不存在的自定义模板名称。
->
-> **请求**: `{ "template": "quarterly-review-v2" }`
->
-> **响应**:
-> ```json
-> {
->   "success": false,
->   "error": {
->     "code": "E031",
->     "name": "TemplateNotFound",
->     "message": "报告模板不存在: quarterly-review-v2",
->     "context": {
->       "requested_template": "quarterly-review-v2",
->       "available_templates": [
->         "default (标准10章模板)",
->         "minimal (精简版)",
->         "technical (技术导向版)"
-       ],
->       "searched_locations": [
->         "./templates/",
->         "~/.config/task-summary/templates/",
->         "/usr/share/task-summary/templates/"
-       ]
->     },
->     "recovery": {
->       "mode": "terminate",
->       "suggestions": [
->         "使用默认模板: 不指定 template 参数或使用 'default'",
->         "查看可用模板: GET /api/templates",
->         "创建自定义模板: POST /api/templates"
-       ]
->     }
-   }
- }
-> ```
+**恢复建议**：使用默认模板、列出可用模板、创建新模板
 
-**恢复建议**:
-1. **使用默认模板**：省略 template 参数或使用 `"default"`
-2. **列出可用模板**：调用模板列表 API 查看正确的模板名称
-3. **创建新模板**：如果需要特殊格式，可以先创建再使用
+**预防措施**：模板自动补全、版本管理、验证测试机制
 
-**预防措施**:
-- 提供模板名称的自动补全功能
-- 在文档中列出所有内置模板及其用途
-- 实现模板版本管理，避免误删正在使用的模板
-- 对自定义模板提供验证和测试机制
+> 示例见 [examples-v2.md](examples-v2.md)
 
 ---
 
@@ -1088,81 +448,23 @@ maintainer: "Task Execution Summary Generator Team"
 | **名称** | ReportGenerationTimeout |
 | **类别** | report_generation |
 | **严重程度** | 🟠 Error |
-| **HTTP 状态码** | 504 Gateway Timeout |
-| **恢复模式** | partial (返回已生成的内容) |
+| **HTTP 状态码** | 504 |
+| **恢复模式** | partial |
 
-**触发条件**:
-当报告生成过程超过预设时间限制时触发：
-- 任务过于复杂（如超长对话、大量代码变更）
-- 系统负载过高导致处理缓慢
-- 外部服务调用阻塞（如 LLM API 响应慢）
-- 模板渲染涉及大量动态内容
-- 输出文件过大（如包含大量代码清单）
+**触发条件**：报告生成超时（任务复杂、系统负载高、外部服务阻塞）
 
-**错误消息模板**:
+**错误消息模板**：
 ```
-报告生成超时: 已超过 {timeout_limit} 限制
-
+报告生成超时: 已超过 {timeout_limit}
 当前进度: {progress_percentage}%
-已完成章节: {completed_chapters}
-正在生成: {current_chapter}
-
-可选操作:
-1. 接收已生成的部分报告 (partial output)
-2. 降低详细程度后重试 (use summary mode)
-3. 排除部分章节后重试 (reduce scope)
-4. 稍后重试 (system may be under load)
+已完成: {completed_chapters}
 ```
 
-**示例场景**:
-> 用户的任务对话长达200轮，包含大量代码片段，报告生成超过了默认的5分钟超时限制。
->
-> **响应**:
-> ```json
-> {
->   "success": false,
->   "error": {
->     "code": "E032",
->     "name": "ReportGenerationTimeout",
->     "message": "报告生成超时: 已超过300秒限制",
->     "context": {
->       "timeout_limit": "300s",
->       "elapsed_time": "305s",
->       "progress": {
->         "completed_chapters": [1, 2, 3, 4, 5],
->         "in_progress": "第六章: 资源使用情况",
->         "remaining_chapters": [6, 7, 8, 9, 10]
->       },
->       "partial_output_available": true
-     },
-     "recovery": {
-       "mode": "partial",
-       "suggestions": [
-         "获取部分报告: 包含已完成的前5章",
-         "使用摘要模式重试: 减少约70%的处理时间",
-         "增加超时时间: 设置 timeout=600 (需管理员权限)"
-       ],
-       "partial_result": {
-         "report_path": "./task-summary-partial.md",
-         "included_chapters": [1, 2, 3, 4, 5],
-         "note": "报告不完整，缺少第6-10章"
-       }
-     }
-   }
- }
-> ```
+**恢复建议**：接收部分报告、降低详细程度、缩小范围
 
-**恢复建议**:
-1. **接收部分报告**：获取已经完成的章节内容，后续可单独生成剩余章节
-2. **降低详细程度**：使用 `detail_level="summary"` 大幅减少处理时间
-3. **缩小范围**：排除不需要的章节减少工作量
-4. **增加超时**：如果确实需要完整报告，联系管理员调整超时设置
+**预防措施**：预估生成时间、增量生成、进度显示
 
-**预防措施**:
-- 对于大型任务，提前预估生成时间并提示用户
-- 实现增量生成机制，支持断点续传
-- 提供进度显示，让用户了解当前状态
-- 优化性能瓶颈（如 LLM 调用批处理、缓存机制）
+> 示例见 [examples-v2.md](examples-v2.md)
 
 ---
 
@@ -1174,86 +476,23 @@ maintainer: "Task Execution Summary Generator Team"
 | **名称** | InsufficientMemory |
 | **类别** | system_resource |
 | **严重程度** | 🔴 Critical |
-| **HTTP 状态码** | 507 Insufficient Storage |
-| **恢复模式** | terminate (无法恢复，需释放资源) |
+| **HTTP 状态码** | 507 |
+| **恢复模式** | terminate |
 
-**触发条件**:
-当系统内存不足以继续执行时触发：
-- 处理超大对话历史时内存溢出
-- 同时处理多个大型报告生成任务
-- 内存泄漏导致可用内存耗尽
-- 系统级别的内存压力（其他进程占用过多）
-- 虚拟内存交换频繁导致性能急剧下降
+**触发条件**：内存不足（超大对话、并发任务多、内存泄漏）
 
-**错误消息模板**:
+**错误消息模板**：
 ```
 🔴 致命错误: 内存不足
-
-当前内存状态:
-- 已用内存: {used_memory} / {total_memory} ({usage_percent}%)
-- 可用内存: {available_memory}
-- 需求内存: {estimated_required_memory}
-- 内存缺口: {memory_deficit}
-
-此错误无法自动恢复。请采取以下措施:
-
-1. 关闭不必要的应用程序释放内存
-2. 减少并发任务数量
-3. 增加系统物理内存
-4. 使用更轻量的配置（如 summary 模式）
-
-错误追踪ID: {error_trace_id}
-请联系系统管理员获取支持。
+已用: {used_memory} / {total_memory}
+需求: {required_memory}
 ```
 
-**示例场景**:
-> 系统正在同时处理3个大型报告生成任务，加上其他服务的内存占用，导致可用内存不足2GB，而当前任务预计需要4GB。
->
-> **响应**:
-> ```json
-> {
->   "success": false,
->   "error": {
->     "code": "E041",
->     "name": "InsufficientMemory",
->     "message": "🔴 致命错误: 内存不足",
->     "severity": "Critical",
->     "context": {
->       "memory_status": {
->         "total_gb": 16.0,
->         "used_gb": 14.2,
->         "available_gb": 1.8,
->         "required_gb": 4.0,
->         "deficit_gb": 2.2
->       },
->       "concurrent_tasks": 3,
->       "system_load": "high"
-     },
-     "recovery": {
-       "mode": "terminate",
-       "suggestions": [
-         "等待其他任务完成后再试",
-         "关闭浏览器或其他内存密集应用",
-         "联系管理员增加服务器内存配置"
-       ],
-       "trace_id": "err_mem_20260409_143000_abc123"
-     }
-   }
- }
-> ```
+**恢复建议**：释放内存、等待空闲、使用summary模式
 
-**恢复建议**:
-1. **释放内存**：关闭其他占用内存的应用程序
-2. **等待空闲**：等待其他报告生成任务完成
-3. **降低需求**：使用 summary 模式减少内存需求（约降低60%）
-4. **升级硬件**：长期解决方案是增加物理内存
+**预防措施**：内存监控、并发上限、分块处理、流式处理
 
-**预防措施**:
-- 实现内存使用监控和预警机制
-- 设置并发任务数上限
-- 对超大输入进行分块处理
-- 实现内存优化的数据处理流水线（流式处理而非全量加载）
-- 定期进行内存泄漏检测和修复
+> 示例见 [examples-v2.md](examples-v2.md)
 
 ---
 
@@ -1265,293 +504,121 @@ maintainer: "Task Execution Summary Generator Team"
 | **名称** | ExecutionTimeout |
 | **类别** | timeout |
 | **严重程度** | 🟠 Error |
-| **HTTP 状态码** | 504 Gateway Timeout |
-| **恢复模式** | partial (返回部分结果或允许延长) |
+| **HTTP 状态码** | 504 |
+| **恢复模式** | partial |
 
-**触发条件**:
-当整个任务执行流程（从信息收集到报告生成）超过全局超时限制时触发：
-- 全局超时默认值为 10 分钟
-- 复杂任务（如跨多天的项目）可能需要更长处理时间
-- 系统处于高负载状态导致整体变慢
-- 外部依赖服务响应缓慢
+**触发条件**：任务执行流程超过全局超时（默认10分钟）
 
-**错误消息模板**:
+**错误消息模板**：
 ```
-执行超时: 任务总耗时已超过 {global_timeout} 限制
-
+执行超时: 已超过 {global_timeout}
 已用时间: {elapsed_time}
-超时限制: {timeout_limit}
 当前阶段: {current_phase}
-阶段进度: {phase_progress}%
-
-此超时覆盖整个执行流程，不同于单阶段的超时(E032)。
-
-恢复选项:
-1. 获取已产生的中间结果
-2. 使用更宽松的超时设置重试 (需权限)
-3. 简化任务范围后重试
 ```
 
-**示例场景**:
-> 一个涉及50+轮对话、多个代码文件变更、复杂问题排查过程的任务，总体执行时间达到了12分钟，超过了10分钟的全局超时。
->
-> **响应**:
-> ```json
-> {
->   "success": false,
->   "error": {
->     "code": "E051",
->     "name": "ExecutionTimeout",
->     "message": "执行超时: 任务总耗时已超过600秒限制",
->     "context": {
->       "elapsed_seconds": 720,
->       "timeout_seconds": 600,
->       "current_phase": "分析处理",
->       "phase_progress": "75%",
->       "completed_phases": ["触发检测", "信息收集"],
->       "intermediate_results": {
->         "collected_data": true,
->         "analysis_partial": true,
->         "report_not_started": true
-       }
-     },
-     "recovery": {
-       "mode": "partial",
-       "suggestions": [
-         "任务规模较大，建议拆分为子任务分别总结",
-         "使用 summary 模式可缩短约60%执行时间",
-         "联系管理员调整全局超时设置"
-       ]
-     }
-   }
- }
-> ```
+**恢复建议**：拆分任务、降低复杂度、申请延长超时
 
-**恢复建议**:
-1. **拆分任务**：将大型任务拆分为多个小任务分别生成报告
-2. **降低复杂度**：使用 summary 模式或减少包含的章节
-3. **申请延长时间**：联系管理员为当前任务类型设置更长的超时
-4. **错峰执行**：在系统负载较低时重试
+**预防措施**：复杂度评估、任务拆分建议、进度显示
 
-**预防措施**:
-- 在任务开始前进行复杂度评估并预警
-- 实现任务拆分建议（自动检测是否应该拆分）
-- 提供进度条和预计剩余时间
-- 优化各阶段的性能瓶颈
-- 对已知的大型任务类型使用专门的优化路径
+> 示例见 [examples-v2.md](examples-v2.md)
 
 ---
 
 ## 4. 错误处理策略矩阵
 
-| 严重级别 | 是否中断执行 | 用户通知方式 | 日志级别 | 默认行为 | 可配置？ | 典型错误码 |
-|---------|-------------|-------------|---------|---------|---------|-----------|
-| **🔴 Critical** | ✅ 立即终止 | 弹窗 + 日志 + 告警 | ERROR | 返回错误，不生成任何输出，释放资源 | ❌ 不可覆盖 | E041 |
-| **🟠 Error** | ✅ 终止当前操作 | 提示 + 日志 + 建议 | WARN | 返回错误信息和恢复建议，不生成完整报告 | ⚠️ 部分可配置（可选择 partial 模式） | E001, E002, E003, E004, E005, E011, E012, E021, E031, E032, E051 |
-| **🟡 Warning** | ❌ 继续执行 | 报告内标注 + 日志 | INFO | 降级继续，在最终报告中体现警告信息 | ✅ 完全可配置（可选择严格模式升级为 Error） | E010, E022 |
+| 严重级别 | 是否中断 | 用户通知 | 默认行为 | 典型错误码 |
+|---------|---------|---------|---------|-----------|
+| **🔴 Critical** | ✅ 立即终止 | 弹窗+日志+告警 | 返回错误，不生成输出 | E041 |
+| **🟠 Error** | ✅ 终止操作 | 提示+日志+建议 | 返回错误，可能部分结果 | E001-E005, E011-E012, E021, E031-E032, E051 |
+| **🟡 Warning** | ❌ 继续执行 | 报告内标注+日志 | 降级继续，报告标注警告 | E010, E022 |
 
-**配置项说明**:
-
+**配置项**:
 ```yaml
 error_handling_config:
-  # 严格模式：将 Warning 升级为 Error
   strict_mode: false
-  
-  # 允许部分输出（针对 Error 级别）
   allow_partial_output: true
-  
-  # 降级阈值：低于此分数视为不可接受
   min_acceptable_quality_score: 60
-  
-  # 自动重试配置
   retry_policy:
     max_retries: 2
     retryable_errors: [E011, E032, E051]
-    backoff_strategy: exponential
-  
-  # 通知配置
-  notification:
-    on_critical: ["email_admin", "slack_alert"]
-    on_error: ["log_warning"]
-    on_warning: ["report_annotation"]
-  
-  # 质量门禁
-  quality_gate:
-    enabled: true
-    fail_on_score_below: 50
-    warn_on_score_below: 70
 ```
 
 ---
 
 ## 5. 降级策略详解
 
-### 5.1 降级执行流程对比
+### 5.1 降级执行流程
 
 ```
-正常流程:
-  ┌──────┐   ┌──────┐   ┌──────┐   ┌──────┐   ┌────────┐
-  │ 触发  │ → │ 收集  │ → │ 分析  │ → │ 生成  │ → │ 成功交付│
-  │ 检测  │   │ 信息  │   │ 处理  │   │ 报告  │   │ (100%) │
-  └──────┘   └──────┘   └──────┘   └──────┘   └────────┘
+正常流程: 触发检测 → 收集信息 → 分析处理 → 生成报告 → 成功交付(100%)
 
-
-降级流程 (以 E010 为例):
-  ┌──────┐   ┌──────┐   ┌───────────┐   ┌──────┐   ┌─────────────┐
-  │ 触发  │ → │ 收集  │ → │ ⚠️ Warning │ → │ 生成  │ → │ 降级交付     │
-  │ 检测  │   │ 信息  │   │ (E010)    │   │ 报告  │   │ (85%,带警告) │
-  └──────┘   └──────┘   └───────────┘   └──────┘   └─────────────┘
-                           │
-                           ↓
-                  ┌──────────────────┐
-                  │ 降级处理动作:     │
-                  │ • 标记受影响章节  │
-                  │ • 使用推断/默认值 │
-                  │ • 计算 penalty   │
-                  │ • 生成降级说明   │
-                  └──────────────────┘
+降级流程: 触发检测 → 收集信息 → ⚠️ Warning(E010) → 生成报告 → 降级交付(85%,带警告)
+                                          ↓
+                                    标记受影响章节
+                                    使用推断/默认值
+                                    计算 penalty
 ```
 
 ### 5.2 降级时的内容影响
 
-当触发 E010 (InsufficientDataWarning) 时，以下内容会受到影响：
-
 | 受影响方面 | 正常模式 | 降级模式 | 影响程度 |
 |-----------|---------|---------|---------|
-| **目标达成度分析** | 量化评分 + 等级 | 定性描述 + 估算等级 | 🟡 中等 |
-| **时间线精度** | 精确到分钟 | 精确到阶段（±30%） | 🟡 中等 |
-| **决策记录完整性** | 含完整 rationale | 仅记录决策结论 | 🟠 较高 |
-| **问题分析深度** | 含根因分析和排查过程 | 仅记录问题和解决方案 | 🟠 较高 |
+| **目标达成度分析** | 量化评分 | 定性描述 | 🟡 中等 |
+| **时间线精度** | 精确到分钟 | 精确到阶段(±30%) | 🟡 中等 |
+| **决策记录完整性** | 含完整rationale | 仅记录结论 | 🟠 较高 |
+| **问题分析深度** | 含根因分析 | 仅记录问题方案 | 🟠 较高 |
 | **资源使用统计** | 详细清单 | 高层级概述 | 🟢 轻微 |
-| **团队协作分析** | 多维度评分 | 标注"数据不足"或跳过 | 🟢 轻微 |
-| **改进建议质量** | 基于数据的精准建议 | 通用性建议 | 🟡 中等 |
-| **报告质量评分** | 90-100 分 | 60-85 分（视缺失程度） | — |
+| **报告质量评分** | 90-100分 | 60-85分 | — |
 
-### 5.3 降级信息的报告呈现
+### 5.3 降级信息报告呈现
 
-在最终生成的报告中，降级信息会在以下位置体现：
-
-**(1) 报告头部 - 元信息区域**
-
+**报告头部元信息**:
 ```markdown
-> **报告元信息**
->
-> - **质量评分**: 78/100 (B级) ⚠️
-> - **降级标记**: 是
-> - **降级原因**: E010 - 数据不充分（决策记录和时间细节有限）
-> - **受影响章节**: §4 关键决策分析, §8 多维度分析
+> **质量评分**: 78/100 (B级) ⚠️
+> **降级原因**: E010 - 数据不充分
+> **受影响章节**: §4 关键决策分析, §8 多维度分析
 ```
 
-**(2) 受影响章节内的内联标注**
+**quality_score 计算**:
 
-```markdown
-## 第四章：关键决策分析
+```
+quality_score = base_score × coverage_factor × confidence_factor
 
-> ⚠️ **本章说明**: 由于决策过程的详细讨论记录有限，以下决策记录基于可用信息整理，
-> 部分 rationale 为推断内容。[详见降级说明]
-
-### 决策D1：技术选型
-...
-**决策依据**:
-1. 性能考量 ✅ (有明确记录)
-2. 团队熟悉度 🔶 (基于推断)
-3. 长期维护性 ⚪ (信息不足，未列入)
+- base_score: 基础分(0-100)
+- coverage_factor: 信息覆盖率(0.0-1.0)
+- confidence_factor: 置信度系数(0.5-1.0)
 ```
 
-**(3) 报告末尾 - 降级说明附录**
+**质量等级**:
 
-```markdown
----
-## 附录E：降级说明 (Degradation Notice)
-
-### 降级概要
-- **降级错误码**: E010 (InsufficientDataWarning)
-- **降级时间**: 2026-04-09T14:30:00Z
-- **原始质量预期**: 95分 (A级)
-- **实际质量得分**: 78分 (B级)
-- **分数差异**: -17分
-
-### 数据缺失详情
-| 信息类别 | 缺失程度 | 影响 | 建议 |
-|---------|---------|------|------|
-| 决策 rationale | 60% 缺失 | 第四章分析深度降低 | 手动补充关键决策理由 |
-| 精确时间戳 | 40% 缺失 | 时间线精度降低 | 如有工时记录可后续整合 |
-| 问题排查细节 | 30% 缺失 | 第五章部分案例简化 | 可在回顾会议时补充 |
-
-### 如何提升报告质量
-1. 本次报告可作为初稿，建议在团队复盘会议上补充完善
-2. 后续如有更多信息，可使用相同参数重新生成以获得完整版本
-3. 对于未来任务，建议在执行过程中保持更详细的沟通记录
-```
-
-### 5.4 quality_score 计算与降级影响
-
-**基础分**: 100 分
-
-**扣分规则**:
-
-```python
-def calculate_quality_score(warnings: List[Warning]) -> int:
-    score = 100
-    
-    for warning in warnings:
-        if warning.code == "E010":
-            # 根据缺失信息类型和程度扣分
-            for missing_item in warning.missing_items:
-                if missing_item.type == "decision_records":
-                    score -= 10 * missing_item.severity  # 最高 -20
-                elif missing_item.type == "timeline_data":
-                    score -= 5 * missing_item.severity    # 最高 -15
-                elif missing_item.type == "issue_details":
-                    score -= 10 * missing_item.severity   # 最高 -20
-                elif missing_item.type == "resource_info":
-                    score -= 5 * missing_item.severity     # 最高 -10
-        
-        elif warning.code == "E022":
-            score -= 5  # 时间线精度问题固定扣分
-    
-    # 确保分数不低于 0
-    return max(0, score)
-
-
-def get_quality_grade(score: int) -> str:
-    if score >= 90: return "A (优秀)"
-    elif score >= 80: return "B (良好)"
-    elif score >= 70: return "C (合格)"
-    elif score >= 60: return "D (勉强可用)"
-    else: return "F (不建议使用)"
-```
-
-**质量等级与使用建议**:
-
-| 分数区间 | 等级 | 建议操作 |
-|---------|------|---------|
-| 90-100 | A (优秀) | 可直接使用，适合正式归档和分享 |
-| 80-89 | B (良好) | 可用，建议快速审阅后使用 |
-| 70-79 | C (合格) | 建议补充关键信息后使用 |
-| 60-69 | D (勉强可用) | 建议大幅修订或重新生成 |
-| <60 | F (不建议使用) | 建议补充数据后重新生成 |
+| 分数区间 | 等级 | 建议 |
+|---------|------|------|
+| 90-100 | A (优秀) | 可直接使用 |
+| 80-89 | B (良好) | 快速审阅后使用 |
+| 70-79 | C (合格) | 补充关键信息后使用 |
+| 60-69 | D (勉强可用) | 大幅修订或重新生成 |
+| <60 | F (不建议使用) | 补充数据后重新生成 |
 
 ---
 
 ## 6. 错误码快速查询表
 
-| 错误码 | 名称 | 一句话说明 | 严重级别 | 用户该怎么做 |
-|-------|------|-----------|---------|------------|
-| **E001** | MissingRequiredParameter | 忘了填 xxx | 🟠 Error | 补上这个必填参数，查看文档了解需要什么 |
-| **E002** | InvalidParameterType | 参数类型不对 | 🟠 Error | 检查参数应该是字符串还是数字，改正确后重试 |
-| **E003** | ParameterValueOutOfRange | 参数值超范围 | 🟠 Error | 把参数调到允许的范围内（文档里有说明） |
-| **E004** | ConflictingParameters | 参数互相打架 | 🟠 Error | 去掉矛盾的其中一个参数，或换一组兼容的组合 |
-| **E005** | InvalidChapterCombination | 章节选得有问题 | 🟠 Error | 补充被依赖的前置章节，或用 detail_level 快捷选择 |
-| **E010** | InsufficientDataWarning | 数据不够完整 | 🟡 Warning | 报告会照常生成但部分内容是估算的，看看能不能补充信息后重新生成 |
-| **E011** | ConversationHistoryUnavailable | 对话记录拿不到 | 🟠 Error | 检查权限，或切换到手动输入模式自己填写任务信息 |
-| **E012** | FileAccessDenied | 文件读写被拒 | 🟠 Error | 换个有权限的路径，或给目标文件夹加上写入权限 |
-| **E021** | GoalAnalysisFailed | 目标分析做不了 | 🟠 Error | 报告还是会生成，但目标达成度那块会是文字描述而不是数字 |
-| **E022** | TimelineReconstructionFailed | 时间线建不准 | 🟡 Warning | 时间数据会有误差（±30%），重要的时间点可以手动校正 |
-| **E031** | TemplateNotFound | 找不到模板 | 🟠 Error | 检查模板名字拼对了没，或直接用默认模板 |
-| **E032** | ReportGenerationTimeout | 生成报告太慢超时了 | 🟠 Error | 可以拿已经生成的那部分，或用摘要模式重试（快很多） |
-| **E041** | InsufficientMemory | 内存不够用了 | 🔴 Critical | 关掉一些其他程序释放内存，这是致命错误没法自动恢复 |
-| **E051** | ExecutionTimeout | 整个任务跑太久了 | 🟠 Error | 任务太大了，考虑拆分成几个小任务分别总结 |
+| 错误码 | 名称 | 说明 | 严重级别 | 用户操作 |
+|-------|------|------|---------|---------|
+| **E001** | MissingRequiredParameter | 缺少必填参数 | 🟠 Error | 补上必填参数 |
+| **E002** | InvalidParameterType | 参数类型不对 | 🟠 Error | 检查参数类型 |
+| **E003** | ParameterValueOutOfRange | 参数值超范围 | 🟠 Error | 调整到允许范围 |
+| **E004** | ConflictingParameters | 参数冲突 | 🟠 Error | 换兼容组合 |
+| **E005** | InvalidChapterCombination | 章节组合无效 | 🟠 Error | 补充前置章节 |
+| **E010** | InsufficientDataWarning | 数据不完整 | 🟡 Warning | 补充后重新生成 |
+| **E011** | ConversationHistoryUnavailable | 对话记录不可用 | 🟠 Error | 检查权限或手动输入 |
+| **E012** | FileAccessDenied | 文件访问被拒 | 🟠 Error | 换有权限路径 |
+| **E021** | GoalAnalysisFailed | 目标分析失败 | 🟠 Error | 接受定性描述 |
+| **E022** | TimelineReconstructionFailed | 时间线不准 | 🟡 Warning | 手动校正时间 |
+| **E031** | TemplateNotFound | 模板不存在 | 🟠 Error | 使用默认模板 |
+| **E032** | ReportGenerationTimeout | 生成超时 | 🟠 Error | 使用摘要模式重试 |
+| **E041** | InsufficientMemory | 内存不足 | 🔴 Critical | 关闭其他程序 |
+| **E051** | ExecutionTimeout | 执行超时 | 🟠 Error | 拆分任务 |
 
 ---
 
@@ -1578,166 +645,17 @@ E0xx 参数验证 (5个)          E1xx 数据源 (3个)           E2xx 分析引
 
 | HTTP 状态码 | 含义 | 对应的错误码 |
 |------------|------|------------|
-| 400 Bad Request | 请求参数有问题 | E001, E002, E003, E004, E005 |
+| 400 Bad Request | 请求参数有问题 | E001-E005 |
 | 403 Forbidden | 无权限访问 | E012 |
 | 404 Not Found | 资源不存在 | E031 |
-| 206 Partial Content | 部分成功（带警告） | E010, E022 |
+| 206 Partial Content | 部分成功 | E010, E022 |
 | 500 Internal Server Error | 服务器内部错误 | E021 |
 | 503 Service Unavailable | 服务暂不可用 | E011 |
 | 504 Gateway Timeout | 网关超时 | E032, E051 |
 | 507 Insufficient Storage | 存储空间不足 | E041 |
 
-## 附录C：版本更新记录
-
-| 版本 | 日期 | 变更内容 |
-|------|------|---------|
-| v1.0.0 | 2026-04-09 | 初始版本，定义15个错误码及完整的分类体系 |
-
-## 7. 客户端错误处理示例
-
-### 7.1 关键处理要点
-
-| 场景 | 处理方式 | 说明 |
-|------|---------|------|
-| **Error/Critical** | 终止处理，返回错误 | 报告无法生成，需用户介入修正 |
-| **Warning (如 E010)** | 继续处理，标注影响 | 报告已生成但部分内容为推断 |
-| **完全成功** | 正常使用报告 | 质量评分为 A 或 B 级 |
-
-### 7.2 JavaScript 和 Python 示例
-
-### 7.3 关键处理要点
-
-| 场景 | 处理方式 | 说明 |
-|------|---------|------|
-| **Error/Critical** | 终止处理，返回错误 | 报告无法生成，需用户介入修正 |
-| **Warning (如 E010)** | 继续处理，标注影响 | 报告已生成但部分内容为推断 |
-| **完全成功** | 正常使用报告 | 质量评分为 A 或 B 级 |
-
 ---
 
-## 8. 重试与恢复策略
-
-本节定义可重试错误的列表、重试策略以及实现重试逻辑的伪代码。
-
-### 8.1 可重试错误列表
-
-以下错误在特定条件下可以通过重试恢复：
-
-| 错误码 | 错误名称 | 重试建议 | 最大重试次数 | 退避策略 |
-|-------|---------|---------|------------|---------|
-| E012 | 数据源不可用 | 等待后重试 | 3 | 指数退避 (1s → 2s → 4s) |
-| E022 | 核心分析引擎错误 | 降低分析深度后重试 | 2 | 固定间隔 (2s) |
-| E031 | 模板渲染失败 | 切换备用模板后重试 | 2 | 立即重试 |
-| E032 | 内容生成失败 | 降低详细程度后重试 | 2 | 固定间隔 (1s) |
-| E051 | 执行超时 | 缩小范围后重试 | 1 | 无需等待 |
-
-### 8.2 不可重试错误列表
-
-以下错误需要用户修正输入，重试无法解决：
-
-- **E001-E005**（参数验证错误）：必须修正参数后重新请求
-- **E041**（系统资源耗尽）：必须释放资源或升级硬件
-
-
-
-### 8.4 请求调整策略
-
-```python
-def adjust_request(request: dict, error: dict) -> dict:
-    """根据错误类型调整请求参数以进行重试"""
-    
-    code = error.get("code")
-    adjusted = request.copy()
-    
-    if code == "E012":
-        # 数据源不可用：切换备用数据源
-        adjusted["data_source"] = "backup"
-    
-    elif code == "E022":
-        # 分析引擎错误：降低分析深度
-        adjusted["analysis_depth"] = "basic"
-    
-    elif code == "E031":
-        # 模板渲染失败：使用默认模板
-        adjusted["template"] = "default"
-    
-    elif code == "E032":
-        # 内容生成失败：降低详细程度
-        adjusted["detail_level"] = "summary"
-    
-    elif code == "E051":
-        # 执行超时：缩小范围
-        adjusted["chapters"] = request.get("chapters", [])[:5]  # 只保留前5章
-    
-    return adjusted
-```
-
----
-
-## 9. E010 降级规则详解
-
-本节详细说明 E010 InsufficientDataWarning 的降级规则，包括覆盖率阈值、各章节处理策略以及用户决策流程。
-
-### 9.1 覆盖率阈值与处理策略
-
-| 综合覆盖率 | 等级 | 处理方式 | 报告质量影响 |
-|-----------|------|---------|------------|
-| >= 90% | 优秀 | 正常生成，无警告 | 无影响 |
-| 70% - 89% | 良好 | 发出 E010 警告，降级继续生成 | 缺失信息标注 "[信息不足]" |
-| 50% - 69% | 差 | 发出 E011 错误，提供三选一 | 显著影响，多处标注低置信度 |
-| < 50% | 极差 | 建议终止，强烈推荐补充信息 | 报告价值有限 |
-
-### 9.2 降级时各章节处理策略
-
-| 章节 | 类型 | 数据不足时处理 |
-|------|------|-------------|
-| 第1章 执行概览 | 必填 | 保留，基于已有数据生成，标注置信度 |
-| 第2章 背景与目标 | 必填 | 保留，缺失目标信息时标注 "[待补充]" |
-| 第3章 执行过程 | 必填 | 保留，仅记录已确认的操作 |
-| 第4章 关键决策 | 可选 | 数据不足时整章标注 "[信息不足以进行分析]" |
-| 第5章 问题与方案 | 必填 | 保留，仅列出明确发现的问题 |
-| 第6章 资源使用 | 可选 | 数据不足时简化为资源清单 |
-| 第7章 协作分析 | 条件 | 无协作数据时跳过整章 |
-| 第8章 多维分析 | 可选 | 数据不足的维度标注 "N/A"，不评分 |
-| 第9章 经验方法论 | 必填 | 保留，但降低推荐的确信度 |
-| 第10章 改进建议 | 必填 | 保留，但标注建议基于不完整数据 |
-
-### 9.3 用户决策流程
-
-当覆盖率 < 70% 触发 E011 时，系统提示用户三选一：
-
-```
-覆盖率 < 70%
-    ↓
-提示用户三选一：
-  A. 降级继续 → 生成报告，但质量评分降低，多处标注低置信度
-  B. 补充信息 → 暂停生成，用户提供额外上下文后重新收集
-  C. 终止生成 → 返回错误响应，说明缺失的信息类别
-```
-
-
-
-### 9.5 质量评分调整公式
-
-```python
-def calculate_degraded_score(base_score: int, coverage: float) -> int:
-    """根据覆盖率计算降级后的质量评分"""
-    
-    if coverage >= 90:
-        penalty = 0
-    elif coverage >= 70:
-        penalty = int((90 - coverage) * 0.5)  # 70-89%: 扣 0-10 分
-    elif coverage >= 50:
-        penalty = 10 + int((70 - coverage) * 1.0)  # 50-69%: 扣 10-30 分
-    else:
-        penalty = 30 + int((50 - coverage) * 1.5)  # <50%: 扣 30+ 分
-    
-    return max(0, base_score - penalty)
-```
-
----
-
-*文档版本: v1.0.0*
-*最后更新: 2026-04-09*
+*文档版本: v1.0.0*  
+*最后更新: 2026-04-15*  
 *适用于 Task Execution Summary Generator v1.0*
-*维护者: Task Execution Summary Generator Team*
