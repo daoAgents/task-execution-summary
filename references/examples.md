@@ -1,3 +1,15 @@
+---
+version: "1.0"
+updated: "2026-04-09"
+stage: deprecated
+skill_version: "v1.0"
+maintainer: "Task Execution Summary Generator Team"
+deprecated_by: "examples-v2.md"
+---
+
+> **⚠️ 已废弃** — 本文档为 v1.0 版本示例，已被 [examples-v2.md](./examples-v2.md) 完全取代。
+> 请使用 examples-v2.md 作为唯一参考。本文件仅保留供历史追溯。
+
 # 使用示例文档
 
 本文档提供"任务执行总结报告生成器"技能的典型使用场景示例，帮助用户理解如何在不同场景下有效使用本技能。

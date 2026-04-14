@@ -1,3 +1,11 @@
+---
+version: "1.0"
+updated: "2026-04-09"
+stage: production
+skill_version: "v1.0+"
+maintainer: "Task Execution Summary Generator Team"
+---
+
 # 错误码定义文档 (Error Codes Reference)
 
 本文档定义了"任务执行总结报告生成器"技能的完整错误码体系，包括错误分类、详细定义、处理策略和降级机制。
@@ -1584,6 +1592,269 @@ E0xx 参数验证 (5个)          E1xx 数据源 (3个)           E2xx 分析引
 | 版本 | 日期 | 变更内容 |
 |------|------|---------|
 | v1.0.0 | 2026-04-09 | 初始版本，定义15个错误码及完整的分类体系 |
+
+## 7. 客户端错误处理示例
+
+本节提供 JavaScript 和 Python 两种语言的错误处理代码示例，展示如何正确处理 API 响应中的 success/error 字段，以及如何区分 Warning 和 Error 级别的问题。
+
+### 7.1 JavaScript 示例
+
+```javascript
+async function handleTaskSummaryResponse(response) {
+  // 检查是否成功
+  if (!response.success) {
+    const error = response.error;
+    
+    // 致命错误：无法生成报告
+    if (error.severity === 'critical' || error.severity === 'error') {
+      console.error(`[${error.code}] ${error.message}`);
+      
+      // 展示恢复建议
+      if (error.recovery) {
+        console.log('建议操作:', error.recovery.suggestion);
+        if (error.recovery.retry_possible) {
+          console.log('可在修正后重试');
+        }
+      }
+      return null;
+    }
+  }
+  
+  // 检查警告（报告已生成但存在质量问题）
+  const report = response.report;
+  if (report.quality_check?.warnings?.length > 0) {
+    for (const warning of report.quality_check.warnings) {
+      console.warn(`[${warning.code}] ${warning.message}`);
+      // E010: 数据覆盖不足，标注低置信度区域
+      if (warning.code === 'E010') {
+        markLowConfidenceSections(report, warning.affected_sections);
+      }
+    }
+  }
+  
+  return report;
+}
+```
+
+### 7.2 Python 示例
+
+```python
+def handle_task_summary_response(response: dict) -> dict | None:
+    """处理任务执行总结报告的响应"""
+    
+    # 检查是否成功
+    if not response.get("success"):
+        error = response.get("error", {})
+        severity = error.get("severity", "error")
+        
+        # 致命错误
+        if severity in ("critical", "error"):
+            print(f"[{error['code']}] {error['message']}")
+            recovery = error.get("recovery")
+            if recovery:
+                print(f"建议操作: {recovery['suggestion']}")
+            return None
+    
+    # 检查警告
+    report = response.get("report", {})
+    warnings = report.get("quality_check", {}).get("warnings", [])
+    for warning in warnings:
+        print(f"⚠️ [{warning['code']}] {warning['message']}")
+        if warning["code"] == "E010":
+            mark_low_confidence_sections(report, warning["affected_sections"])
+    
+    return report
+```
+
+### 7.3 关键处理要点
+
+| 场景 | 处理方式 | 说明 |
+|------|---------|------|
+| **Error/Critical** | 终止处理，返回错误 | 报告无法生成，需用户介入修正 |
+| **Warning (如 E010)** | 继续处理，标注影响 | 报告已生成但部分内容为推断 |
+| **完全成功** | 正常使用报告 | 质量评分为 A 或 B 级 |
+
+---
+
+## 8. 重试与恢复策略
+
+本节定义可重试错误的列表、重试策略以及实现重试逻辑的伪代码。
+
+### 8.1 可重试错误列表
+
+以下错误在特定条件下可以通过重试恢复：
+
+| 错误码 | 错误名称 | 重试建议 | 最大重试次数 | 退避策略 |
+|-------|---------|---------|------------|---------|
+| E012 | 数据源不可用 | 等待后重试 | 3 | 指数退避 (1s → 2s → 4s) |
+| E022 | 核心分析引擎错误 | 降低分析深度后重试 | 2 | 固定间隔 (2s) |
+| E031 | 模板渲染失败 | 切换备用模板后重试 | 2 | 立即重试 |
+| E032 | 内容生成失败 | 降低详细程度后重试 | 2 | 固定间隔 (1s) |
+| E051 | 执行超时 | 缩小范围后重试 | 1 | 无需等待 |
+
+### 8.2 不可重试错误列表
+
+以下错误需要用户修正输入，重试无法解决：
+
+- **E001-E005**（参数验证错误）：必须修正参数后重新请求
+- **E041**（系统资源耗尽）：必须释放资源或升级硬件
+
+### 8.3 重试伪代码
+
+```
+function executeWithRetry(request, maxRetries = 3):
+    for attempt in 1..maxRetries:
+        response = execute(request)
+        
+        if response.success:
+            return response
+        
+        error = response.error
+        if error.code not in RETRYABLE_ERRORS:
+            return response  // 不可重试，直接返回
+        
+        // 指数退避
+        delay = BASE_DELAY * (2 ^ (attempt - 1))
+        wait(delay)
+        
+        // 根据错误类型调整请求
+        request = adjustRequest(request, error)
+    
+    return lastResponse  // 重试耗尽
+```
+
+### 8.4 请求调整策略
+
+```python
+def adjust_request(request: dict, error: dict) -> dict:
+    """根据错误类型调整请求参数以进行重试"""
+    
+    code = error.get("code")
+    adjusted = request.copy()
+    
+    if code == "E012":
+        # 数据源不可用：切换备用数据源
+        adjusted["data_source"] = "backup"
+    
+    elif code == "E022":
+        # 分析引擎错误：降低分析深度
+        adjusted["analysis_depth"] = "basic"
+    
+    elif code == "E031":
+        # 模板渲染失败：使用默认模板
+        adjusted["template"] = "default"
+    
+    elif code == "E032":
+        # 内容生成失败：降低详细程度
+        adjusted["detail_level"] = "summary"
+    
+    elif code == "E051":
+        # 执行超时：缩小范围
+        adjusted["chapters"] = request.get("chapters", [])[:5]  # 只保留前5章
+    
+    return adjusted
+```
+
+---
+
+## 9. E010 降级规则详解
+
+本节详细说明 E010 InsufficientDataWarning 的降级规则，包括覆盖率阈值、各章节处理策略以及用户决策流程。
+
+### 9.1 覆盖率阈值与处理策略
+
+| 综合覆盖率 | 等级 | 处理方式 | 报告质量影响 |
+|-----------|------|---------|------------|
+| >= 90% | 优秀 | 正常生成，无警告 | 无影响 |
+| 70% - 89% | 良好 | 发出 E010 警告，降级继续生成 | 缺失信息标注 "[信息不足]" |
+| 50% - 69% | 差 | 发出 E011 错误，提供三选一 | 显著影响，多处标注低置信度 |
+| < 50% | 极差 | 建议终止，强烈推荐补充信息 | 报告价值有限 |
+
+### 9.2 降级时各章节处理策略
+
+| 章节 | 类型 | 数据不足时处理 |
+|------|------|-------------|
+| 第1章 执行概览 | 必填 | 保留，基于已有数据生成，标注置信度 |
+| 第2章 背景与目标 | 必填 | 保留，缺失目标信息时标注 "[待补充]" |
+| 第3章 执行过程 | 必填 | 保留，仅记录已确认的操作 |
+| 第4章 关键决策 | 可选 | 数据不足时整章标注 "[信息不足以进行分析]" |
+| 第5章 问题与方案 | 必填 | 保留，仅列出明确发现的问题 |
+| 第6章 资源使用 | 可选 | 数据不足时简化为资源清单 |
+| 第7章 协作分析 | 条件 | 无协作数据时跳过整章 |
+| 第8章 多维分析 | 可选 | 数据不足的维度标注 "N/A"，不评分 |
+| 第9章 经验方法论 | 必填 | 保留，但降低推荐的确信度 |
+| 第10章 改进建议 | 必填 | 保留，但标注建议基于不完整数据 |
+
+### 9.3 用户决策流程
+
+当覆盖率 < 70% 触发 E011 时，系统提示用户三选一：
+
+```
+覆盖率 < 70%
+    ↓
+提示用户三选一：
+  A. 降级继续 → 生成报告，但质量评分降低，多处标注低置信度
+  B. 补充信息 → 暂停生成，用户提供额外上下文后重新收集
+  C. 终止生成 → 返回错误响应，说明缺失的信息类别
+```
+
+### 9.4 降级实现示例
+
+```python
+def handle_data_insufficiency(coverage_score: float, missing_items: list) -> dict:
+    """根据数据覆盖率决定处理方式"""
+    
+    if coverage_score >= 90:
+        return {"action": "proceed", "warning": None}
+    
+    elif coverage_score >= 70:
+        return {
+            "action": "proceed_with_warning",
+            "warning": {
+                "code": "E010",
+                "message": "数据覆盖不足，报告将标注低置信度区域",
+                "quality_penalty": 10
+            }
+        }
+    
+    elif coverage_score >= 50:
+        return {
+            "action": "user_choice_required",
+            "error": {
+                "code": "E011",
+                "message": "数据严重不足，建议补充信息",
+                "options": ["degrade_continue", "supplement_info", "abort"]
+            }
+        }
+    
+    else:
+        return {
+            "action": "abort",
+            "error": {
+                "code": "E011",
+                "message": "数据极度不足，无法生成有价值的报告",
+                "missing_categories": missing_items
+            }
+        }
+```
+
+### 9.5 质量评分调整公式
+
+```python
+def calculate_degraded_score(base_score: int, coverage: float) -> int:
+    """根据覆盖率计算降级后的质量评分"""
+    
+    if coverage >= 90:
+        penalty = 0
+    elif coverage >= 70:
+        penalty = int((90 - coverage) * 0.5)  # 70-89%: 扣 0-10 分
+    elif coverage >= 50:
+        penalty = 10 + int((70 - coverage) * 1.0)  # 50-69%: 扣 10-30 分
+    else:
+        penalty = 30 + int((50 - coverage) * 1.5)  # <50%: 扣 30+ 分
+    
+    return max(0, base_score - penalty)
+```
 
 ---
 
