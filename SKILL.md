@@ -239,6 +239,7 @@ compatibility:
 | [templates.md](references/templates.md) | 完整模板详解 |
 | [examples-v2.md](references/examples-v2.md) | 完整使用示例 |
 | [terminology.md](references/terminology.md) | 术语表 |
+| [document-update-guidelines.md](references/document-update-guidelines.md) | 文档更新规范 |
 
 ### 文档版本对照表
 
@@ -251,6 +252,7 @@ compatibility:
 | templates.md | v2.0 | 完整模板详解 |
 | examples-v2.md | v2.0 | 完整使用示例 |
 | terminology.md | v2.1 | 术语表 |
+| document-update-guidelines.md | v1.0 | 文档更新规范 |
 | api-reference-quick.md | v2.0-quick | API 端点速查 |
 | error-codes-quick.md | v2.0-quick | 错误码速查表 |
 | execution-flow-quick.md | v2.0-quick | 执行流程速览 |
