@@ -847,8 +847,8 @@ task-summary-sprint24-review-20260409-143022.json
 | 字段名 | 类型 | 说明 | 计算公式 |
 |-------|------|------|---------|
 | `goal_achievement_rate` | float | [目标达成率](terminology.md#26-达成率-achievement-rate) | 实际完成目标数 / 总目标数 |
-| `time_efficiency_ratio` | float | [时间效能比](terminology.md#34-时效比-time-efficiency-ratio) | 计划总时长 / 实际总时长（>1 表示提前，<1 表示超时） |
-| `resource_utilization_rate` | float | [资源利用率](terminology.md#44-利用率-utilization-rate) | 有效使用资源数 / 总引入资源数 |
+| `time_efficiency_ratio` | float | [时间效能比](terminology.md) | 计划总时长 / 实际总时长（>1 表示提前，<1 表示超时） |
+| `resource_utilization_rate` | float | [资源利用率](terminology.md) | 有效使用资源数 / 总引入资源数 |
 | `problem_resolution_rate` | float | 问题解决率 | 已解决问题数 / 总问题数 |
 
 #### file_info 对象（仅在 save_to_file=true 时存在）

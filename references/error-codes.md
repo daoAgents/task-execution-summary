@@ -547,7 +547,7 @@ error_handling_config:
 
 ---
 
-## 5. [降级](terminology.md#229-降级-degradation)策略详解
+## 5. [降级](terminology.md)策略详解
 
 ### 5.1 降级执行流程
 
@@ -561,7 +561,7 @@ error_handling_config:
                                     计算 penalty
 ```
 
-> 术语定义详见 [terminology.md#229-降级-degradation](terminology.md#229-降级-degradation)
+> 术语定义详见 [terminology.md](terminology.md)
 
 ### 5.2 降级时的内容影响
 
