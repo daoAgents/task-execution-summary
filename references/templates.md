@@ -1,8 +1,8 @@
 ---
-version: "1.0"
+version: "2.0"
 updated: "2026-04-09"
 stage: production
-skill_version: "v1.0+"
+skill_version: "v2.0+"
 maintainer: "Task Execution Summary Generator Team"
 ---
 
@@ -99,7 +99,7 @@ maintainer: "Task Execution Summary Generator Team"
 ```markdown
 ---
 name: task-execution-summary-quick
-version: 1.0
+version: 2.0
 template_type: quick-summary
 ---
 
@@ -226,7 +226,7 @@ template_type: quick-summary
 ```markdown
 ---
 name: task-execution-summary-standard
-version: 1.0
+version: 2.0
 template_type: standard
 ---
 
@@ -924,4 +924,4 @@ Step 1: [操作描述]
 
 ---
 
-*模板文档版本：v1.0* | *最后更新：2026-04-09* | *适用于 Task Execution Summary Generator v1.0*
+*模板文档版本：v2.0* | *最后更新：2026-04-09* | *适用于 Task Execution Summary Generator v2.0*

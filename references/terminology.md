@@ -925,7 +925,7 @@
 
 ---
 
-*术语表版本：v1.0*
+*术语表版本：v2.0*
 *收录术语数：86个*
 *最后更新：2026-04-09*
-*适用于 Task Execution Summary Generator v1.0*
+*适用于 Task Execution Summary Generator v2.0*

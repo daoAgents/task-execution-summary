@@ -1,8 +1,8 @@
 ---
-version: "1.0-quick"
+version: "2.0-quick"
 updated: "2026-04-15"
 stage: production
-skill_version: "v1.0+"
+skill_version: "v2.0+"
 ---
 
 # 执行流程速查

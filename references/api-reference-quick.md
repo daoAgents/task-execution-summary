@@ -1,7 +1,7 @@
 ---
-version: "1.0-quick"
+version: "2.0-quick"
 updated: "2026-04-15"
-skill_version: "v1.0+"
+skill_version: "v2.0+"
 ---
 
 # API 接口速查
@@ -14,7 +14,7 @@ skill_version: "v1.0+"
 
 | 属性 | 值 |
 |------|---|
-| API 版本 | v1.0 |
+| API 版本 | v2.0 |
 | 协议 | RESTful API / JSON-RPC |
 | 数据格式 | JSON (请求) / Markdown 或 JSON (响应) |
 | 编码 | UTF-8 |

@@ -1,8 +1,8 @@
 ---
-version: "1.0"
+version: "2.0"
 updated: "2026-04-15"
 stage: production
-skill_version: "v1.0+"
+skill_version: "v2.0+"
 maintainer: "Task Execution Summary Generator Team"
 ---
 
@@ -660,6 +660,6 @@ E0xx 参数验证 (5个)          E1xx 数据源 (3个)           E2xx 分析引
 
 ---
 
-*文档版本: v1.0.0*  
+*文档版本: v2.0.0*  
 *最后更新: 2026-04-15*  
-*适用于 Task Execution Summary Generator v1.0*
+*适用于 Task Execution Summary Generator v2.0*

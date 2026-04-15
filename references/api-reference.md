@@ -1,10 +1,10 @@
 # 任务执行总结报告生成器 - API 接口参考文档
 
-> **文档版本**: v1.0
+> **文档版本**: v2.0
 >
 > **最后更新**: 2026-04-09
 >
-> **适用技能版本**: Task Execution Summary Generator v1.0
+> **适用技能版本**: Task Execution Summary Generator v2.0
 >
 > **维护者**: Task Execution Summary Generator Team
 
@@ -71,7 +71,7 @@
 ### 1.2 接口版本信息
 
 ```
-API 版本: v1.0
+API 版本: v2.0
 协议: RESTful API / JSON-RPC
 数据格式: JSON (请求) / Markdown 或 JSON (响应)
 编码: UTF-8
@@ -645,7 +645,7 @@ task-summary-sprint24-review-20260409-143022.json
   name: task-execution-summary
   version: 1.0
   template_type: standard
-  generated_by: Task Execution Summary Generator v1.0
+  generated_by: Task Execution Summary Generator v2.0
   task_name: 用户认证模块开发
   generated_at: 2026-04-03T17:30:00+08:00
   ---
@@ -695,7 +695,7 @@ task-summary-sprint24-review-20260409-143022.json
   ```json
   {
     "custom_header": "> **机密文件** - 本报告仅供内部使用，请勿外传\n>\n> **项目**: 电商平台重构 V2.0\n> **部门**: 技术研发部",
-    "custom_footer": "---\n\n*报告生成器: Task Execution Summary Generator v1.0*\n*如有疑问请联系: tech-docs@company.com*"
+    "custom_footer": "---\n\n*报告生成器: Task Execution Summary Generator v2.0*\n*如有疑问请联系: tech-docs@company.com*"
   }
   ```
 
@@ -736,7 +736,7 @@ task-summary-sprint24-review-20260409-143022.json
       "task_name": "用户认证模块开发",
       "task_type": "development",
       "generated_at": "2026-04-09T14:30:22+08:00",
-      "generator_version": "v1.0",
+      "generator_version": "v2.0"
       "template_used": "standard",
       "detail_level": "standard",
       "language_style": "professional",
@@ -1086,7 +1086,7 @@ task-summary-sprint24-review-20260409-143022.json
 
 ## 6. 版本历史与变更记录
 
-### v1.0 (2026-04-09) - 初始版本
+### v2.0 (2026-04-09) - 初始版本
 
 **发布日期**: 2026年4月9日
 
