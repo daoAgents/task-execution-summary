@@ -92,6 +92,10 @@
 
 任务之间的关系，表明某项工作的开始或完成依赖于另一项工作的输出或状态。
 
+### 3.6 时效比 (Time Efficiency Ratio)
+
+计划总时长与实际总时长的比值，用于衡量时间管理效能。数值大于1表示提前完成，等于1表示准时完成，小于1表示超时。计算公式：`时效比 = 计划总时长 / 实际总时长`
+
 ---
 
 ## 四、问题与风险术语
@@ -293,47 +297,48 @@ Scrum敏捷开发方法中的固定长度迭代周期（通常1-4周），团队
 | 14 | 瓶颈 | Bottleneck | 时间与效率分析 |
 | 15 | 关键路径 | Critical Path | 时间与效率分析 |
 | 16 | 依赖 | Dependency | 时间与效率分析 |
-| 17 | 问题 | Issue/Problem | 问题与风险 |
-| 18 | 风险 | Risk | 问题与风险 |
-| 19 | 严重程度 | Severity | 问题与风险 |
-| 20 | 根因 | Root Cause | 问题与风险 |
-| 21 | 资源 | Resource | 资源与协作 |
-| 22 | 效率 | Efficiency | 资源与协作 |
-| 23 | 效能 | Effectiveness | 资源与协作 |
-| 24 | 优先级 | Priority | 资源与协作 |
-| 25 | 技术栈 | Tech Stack | 资源与协作 |
-| 26 | 决策 | Decision | 资源与协作 |
-| 27 | 权衡 | Trade-off | 资源与协作 |
-| 28 | 执行概览 | Executive Summary | 报告结构 |
-| 29 | 方法论提炼 | Methodology Extraction | 报告结构 |
-| 30 | 经验教训 | Lesson Learned | 报告结构 |
-| 31 | 最佳实践 | Best Practice | 报告结构 |
-| 32 | 模式 | Pattern | 报告结构 |
-| 33 | Sprint | Sprint | 项目管理 |
-| 34 | 用户故事 | User Story | 项目管理 |
-| 35 | Backlog | Backlog | 项目管理 |
-| 36 | 回顾会议 | Retrospective | 项目管理 |
-| 37 | Velocity | Velocity | 项目管理 |
-| 38 | 迭代 | Iteration | 项目管理 |
-| 39 | Story Point | Story Point | 项目管理 |
-| 40 | MVP | Minimum Viable Product | 项目管理 |
-| 41 | 缺陷 | Defect/Bug | 软件开发 |
-| 42 | 技术债务 | Technical Debt | 软件开发 |
-| 43 | 重构 | Refactoring | 软件开发 |
-| 44 | Code Review | Code Review | 软件开发 |
-| 45 | PR/MR | PR/MR | 软件开发 |
-| 46 | CI/CD | CI/CD | 软件开发 |
-| 47 | PDCA循环 | PDCA Cycle | 质量与改进 |
-| 48 | 持续改进 | Continuous Improvement | 质量与改进 |
-| 49 | 排查 | Troubleshooting | 质量与改进 |
-| 50 | 阻塞 | Blocker | 质量与改进 |
-| 51 | 时间线 | Timeline | 质量与改进 |
-| 52 | 假设 | Assumption | 质量与改进 |
-| 53 | MoSCoW法则 | MoSCoW Rule | 质量与改进 |
+| 17 | 时效比 | Time Efficiency Ratio | 时间与效率分析 |
+| 18 | 问题 | Issue/Problem | 问题与风险 |
+| 19 | 风险 | Risk | 问题与风险 |
+| 20 | 严重程度 | Severity | 问题与风险 |
+| 21 | 根因 | Root Cause | 问题与风险 |
+| 22 | 资源 | Resource | 资源与协作 |
+| 23 | 效率 | Efficiency | 资源与协作 |
+| 24 | 效能 | Effectiveness | 资源与协作 |
+| 25 | 优先级 | Priority | 资源与协作 |
+| 26 | 技术栈 | Tech Stack | 资源与协作 |
+| 27 | 决策 | Decision | 资源与协作 |
+| 28 | 权衡 | Trade-off | 资源与协作 |
+| 29 | 执行概览 | Executive Summary | 报告结构 |
+| 30 | 方法论提炼 | Methodology Extraction | 报告结构 |
+| 31 | 经验教训 | Lesson Learned | 报告结构 |
+| 32 | 最佳实践 | Best Practice | 报告结构 |
+| 33 | 模式 | Pattern | 报告结构 |
+| 34 | Sprint | Sprint | 项目管理 |
+| 35 | 用户故事 | User Story | 项目管理 |
+| 36 | Backlog | Backlog | 项目管理 |
+| 37 | 回顾会议 | Retrospective | 项目管理 |
+| 38 | Velocity | Velocity | 项目管理 |
+| 39 | 迭代 | Iteration | 项目管理 |
+| 40 | Story Point | Story Point | 项目管理 |
+| 41 | MVP | Minimum Viable Product | 项目管理 |
+| 42 | 缺陷 | Defect/Bug | 软件开发 |
+| 43 | 技术债务 | Technical Debt | 软件开发 |
+| 44 | 重构 | Refactoring | 软件开发 |
+| 45 | Code Review | Code Review | 软件开发 |
+| 46 | PR/MR | PR/MR | 软件开发 |
+| 47 | CI/CD | CI/CD | 软件开发 |
+| 48 | PDCA循环 | PDCA Cycle | 质量与改进 |
+| 49 | 持续改进 | Continuous Improvement | 质量与改进 |
+| 50 | 排查 | Troubleshooting | 质量与改进 |
+| 51 | 阻塞 | Blocker | 质量与改进 |
+| 52 | 时间线 | Timeline | 质量与改进 |
+| 53 | 假设 | Assumption | 质量与改进 |
+| 54 | MoSCoW法则 | MoSCoW Rule | 质量与改进 |
 
 ---
 
 *术语表版本：v2.1*
-*收录术语数：53个*
+*收录术语数：54个*
 *最后更新：2026-04-15*
 *适用于 Task Execution Summary Generator v2.0*

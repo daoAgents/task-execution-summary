@@ -644,7 +644,7 @@ Step 1: [操作描述]
 
 **效果验证**：[在本次任务中的应用效果]
 
-### 9.2 [最佳实践](terminology.md#74-最佳实践-best-practice)清单
+### 9.2 [最佳实践](terminology.md#64-最佳实践-best-practice)清单
 
 #### ✅ 做得好的（Keep Doing）
 
@@ -734,7 +734,7 @@ Step 1: [操作描述]
 
 ## 附录
 
-### 附录A：[术语表](terminology.md)
+### 附录A：[术语表](terminology.md#术语表-glossary)
 
 ### 附录B：参考资料
 

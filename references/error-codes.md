@@ -116,7 +116,7 @@ maintainer: "Task Execution Summary Generator Team"
 | **Error** | 🟠 | 功能性错误 | 终止当前步骤，可能返回部分结果 |
 | **Warning** | 🟡 | 非致命问题 | 标记警告，继续执行 |
 
-> 严重程度术语定义详见 [terminology.md#44-严重程度-severity](terminology.md#44-严重程度-severity)
+> 严重程度术语定义详见 [terminology.md#43-严重程度-severity](terminology.md#43-严重程度-severity)
 
 ---
 

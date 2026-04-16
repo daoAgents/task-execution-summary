@@ -252,9 +252,9 @@ interface CollectedData {
 
 | 维度 | 分析方法 | 核心指标 |
 |------|---------|---------|
-| **目标达成度** | 对比法 + 量化评估 | [达成率](terminology.md#26-达成率-achievement-rate) = 实际值/期望值 × 100% |
-| **时间效能** | 偏差计算 + 瓶颈识别 | 总体[时效比](terminology.md)、阶段均衡度、[瓶颈](terminology.md#33-瓶颈-bottleneck)集中度 |
-| **资源利用率** | [利用率](terminology.md)计算 + [浪费](terminology.md)识别 | 必要性、充分性、适配性、性价比评分 |
+| **目标达成度** | 对比法 + 量化评估 | [达成率](terminology.md#24-达成率-achievement-rate) = 实际值/期望值 × 100% |
+| **时间效能** | 偏差计算 + 瓶颈识别 | 总体[时效比](terminology.md#36-时效比-time-efficiency-ratio)、阶段均衡度、[瓶颈](terminology.md#33-瓶颈-bottleneck)集中度 |
+| **资源利用率** | 利用率计算 + 浪费识别 | 必要性、充分性、适配性、性价比评分 |
 | **问题模式** | 分类统计 + 有效性评估 | 技术/环境/流程/认知四层分类 |
 | **协作效果** | 多维度评分 | 沟通效率、分工合理、协同效果 (条件启用) |
 
@@ -517,7 +517,7 @@ Step1 → Step2 → Step3 → Step4 → Step5 → Step6 → Step7 → ✅ Succes
 | Step 2 | 5s | 10s | 使用默认模式 |
 | Step 3 | 180s | 300s | 保存已收集数据，发出 E051 |
 | Step 4 | 180s | 300s | 返回已完成的分析维度 |
-| Step 5 | 120s | 180s | [降级](terminology.md)到简化模板 |
+| Step 5 | 120s | 180s | 降级到简化模板 |
 | Step 6 | 60s | 90s | 跳过推荐 |
 | Step 7 | 30s | 60s | 跳过检查，直接输出 |
 | **全流程** | **480s** | **720s** | **返回已完成部分** |
